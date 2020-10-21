@@ -13,7 +13,7 @@ from ScalingHeart import scale_heart
 data: pd.DataFrame = pd.read_csv('data/heart_failure_clinical_records_dataset.csv')
 norm_data_zscore, norm_data_minmax = scale_heart(data)
 
-
+norm_data_zscore.pop('DEATH_EVENT')
 y: np.ndarray = data['DEATH_EVENT']
 X: np.ndarray = norm_data_zscore.values
 labels = pd.unique(y)
