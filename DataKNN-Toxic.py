@@ -38,5 +38,11 @@ ds.multiple_line_chart(nvalues, values, title='KNN variants', xlabel='n', ylabel
 plt.show()
 print('Best results with %d neighbors and %s'%(best[0], best[1]))
 
+# Performance
 
+clf = knn = KNeighborsClassifier(n_neighbors=best[0], metric=best[1])
+clf.fit(trnX, trnY)
+prd_trn = clf.predict(trnX)
+prd_tst = clf.predict(tstX)
+ds.plot_evaluation_results(pd.unique(y), trnY, prd_trn, tstY, prd_tst)
 
