@@ -14,7 +14,7 @@ data: pd.DataFrame = pd.read_csv('data/heart_failure_clinical_records_dataset.cs
 norm_data_zscore, norm_data_minmax = scale_heart(data)
 
 
-y: np.ndarray = norm_data_zscore.pop('DEATH_EVENT').values
+y: np.ndarray = data['DEATH_EVENT']
 X: np.ndarray = norm_data_zscore.values
 labels = pd.unique(y)
 
@@ -28,7 +28,7 @@ ds.plot_evaluation_results(pd.unique(y), trnY, prd_trn, tstY, prd_tst)
 
 # Estimation
 estimators = {'GaussianNB': GaussianNB(),
-              'MultinomialNB': MultinomialNB(),
+              # 'MultinomialNB': MultinomialNB(),
               'BernoulyNB': BernoulliNB()}
 
 xvalues = []
