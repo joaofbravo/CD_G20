@@ -86,5 +86,5 @@ print('CrossVal std: %.4f' % score_std)
 
 plt.figure()
 ds.bar_chart(xvalues, score_mean, title='Comparison of Naive Bayes Models', ylabel='accuracy', percentage=True)
-# plt.show()
 plt.savefig('plots/Heart_NaiveBayes_CrossVal5_mean_estimators.png')
+plt.show()
