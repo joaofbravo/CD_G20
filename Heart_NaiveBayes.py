@@ -74,10 +74,12 @@ for train_index, test_index in skf.split(X, y):
     plt.savefig('plots/Heart_NaiveBayes_CrossVal5_#'+str(i)+'_estimators.png')
     i+=1
 
+
+# CrossVal: find max, mean, std
 score_best = np.max([score_crossval[i] for i in range(n_splits)])
 score_bestarg = np.argmax([score_crossval[i] for i in range(n_splits)])
 
-print('CrossVal best estimator: %s with score %.2f' % (xvalues[score_bestarg % 3], score_best))
+print('CrossVal best estimator: %s with score %.2f' % (xvalues[score_bestarg % len(xvalues)], score_best))
 
 score_mean = np.mean(score_crossval)
 score_std = np.std([score_crossval[i][0] for i in range(n_splits)])
