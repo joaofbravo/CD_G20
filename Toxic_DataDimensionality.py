@@ -37,7 +37,3 @@ print(mv.values())
 print()
 
 print(data)
-
-
-
-

@@ -27,9 +27,5 @@ c = data.corr().abs()
 s = c.unstack()
 so = s.sort_values(kind="quicksort")
 
-
 #pd.set_option('display.max_rows', None)
 print(so[-1400:-1025])
-
-
-

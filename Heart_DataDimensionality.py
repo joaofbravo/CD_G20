@@ -27,8 +27,4 @@ ds.bar_chart(mv.keys(), mv.values(), title='Nr of missing values per variable',
                ylabel='nr missing values')
 plt.xticks(rotation=90)
 
-
 print(mv.values())
-
-
-
