@@ -62,9 +62,9 @@ dist = ['manhattan', 'euclidean', 'chebyshev']
 
 print('-> Holdout:')
 best, _, _ = KNNModel(trnX, tstX, trnY, tstY, nvalues, dist)
-plt.savefig('plots/Heart_KNN_holdout.png')
+plt.savefig('plots/Heart_KNN_zscore_holdout.png')
 KNNPerformance(trnX, tstX, trnY, tstY, best)
-plt.savefig('plots/Heart_KNN_holdout_performance.png')
+plt.savefig('plots/Heart_KNN_zscore_holdout_performance.png')
 
 
 # k-fold cross validation (StratifiedKFold)
@@ -81,9 +81,9 @@ for train_index, test_index in skf.split(X, y):
     y_train, y_test = y[train_index], y[test_index]
     
     best, _, acc_crossval[i] = KNNModel(X_train, X_test, y_train, y_test, nvalues, dist)
-    plt.savefig('plots/Heart_KNN_CrossVal5_#'+str(i)+'.png')
+    plt.savefig('plots/Heart_KNN_zscore_CrossVal5_#'+str(i)+'.png')
     KNNPerformance(X_train, X_test, y_train, y_test, best)
-    plt.savefig('plots/Heart_KNN_CrossVal5_#'+str(i)+'_performance.png')
+    plt.savefig('plots/Heart_KNN_zscore_CrossVal5_#'+str(i)+'_performance.png')
     i+=1
 
 
@@ -98,7 +98,7 @@ for i, d in enumerate(dist):
 
 plt.figure()
 ds.multiple_line_chart(nvalues, acc_mean, title='KNN variants', xlabel='n', ylabel='accuracy', percentage=True)
-plt.savefig('plots/Heart_KNN_CrossVal5_mean.png')
+plt.savefig('plots/Heart_KNN_zscore_CrossVal5_mean.png')
 
 # CrossVal: find max accuracy
 acc_best = np.max([acc_mean[i] for i in dist])
@@ -113,5 +113,5 @@ for train_index, test_index in skf.split(X, y):
     X_train, X_test = X[train_index], X[test_index]
     y_train, y_test = y[train_index], y[test_index]
     KNNPerformance(X_train, X_test, y_train, y_test, (n_best, dist_best))
-    plt.savefig('plots/Heart_KNN_CrossVal5_best'+str(i)+'_performance.png')
+    plt.savefig('plots/Heart_KNN_zscore_CrossVal5_best'+str(i)+'_performance.png')
     i+=1
