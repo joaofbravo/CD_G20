@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split, StratifiedKFold
 import sklearn.metrics as metrics
 from sklearn.neighbors import KNeighborsClassifier
 import ds_functions as ds
-from ScalingHeart import scale_heart
+from Heart_Scaling import scale_heart
 
 
 # KNN

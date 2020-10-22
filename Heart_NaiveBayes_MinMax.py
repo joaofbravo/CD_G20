@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split, StratifiedKFold
 import sklearn.metrics as metrics
 from sklearn.naive_bayes import GaussianNB, MultinomialNB, BernoulliNB
 import ds_functions as ds
-from ScalingHeart import scale_heart
+from Heart_Scaling import scale_heart
 
 
 # Naive Bayes
