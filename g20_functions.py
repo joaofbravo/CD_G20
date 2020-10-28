@@ -19,7 +19,7 @@ def loadHeart():
     return pd.read_csv('data/heart_failure_clinical_records_dataset.csv')
 
 def loadToxic():
-    pd.read_csv('data/qsar_oral_toxicity.csv',header= None, sep =';')
+    return pd.read_csv('data/qsar_oral_toxicity.csv',header= None, sep =';')
 
 
 def dataShapeAndTypes(data):
@@ -37,6 +37,14 @@ def correlationHeart(data, title = 'Correlation analysis'):
     sns.heatmap(corr_mtx, xticklabels=corr_mtx.columns, yticklabels=corr_mtx.columns, annot=True, cmap='Blues')
     plt.title(title)
     plt.show()
+
+def correlationToxic(data):
+    c = data.corr().abs()
+    s = c.unstack()
+    return s.sort_values(kind="quicksort")
+
+def topCorr(so, thresholds = [0.99]):
+    return 1
 
 OUTLIER_METHODS = ["Isolation Forest","Elliptic Envelope","Local Outlier Factor"]
 def outlierRemoval(X,Y, method, cont):
