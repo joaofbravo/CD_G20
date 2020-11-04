@@ -36,57 +36,61 @@ def NaiveBayesEstimation(X_train, X_test, y_train, y_test):
     # plt.show()
     return xvalues, np.asarray(yvalues)
 
-
-# get data
-data: pd.DataFrame = pd.read_csv('data/heart_failure_clinical_records_dataset.csv')
-y: np.ndarray = data.pop('DEATH_EVENT').values
-X: np.ndarray = data.values
-labels = pd.unique(y)
-
-
-# hold-out (train_test_split)
-trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y)
-
-clf_holdout = NaiveBayesModel(trnX, tstX, trnY, tstY)
-plt.savefig('plots/Heart_NaiveBayes_holdout.png')
-_, score_holdout = NaiveBayesEstimation(trnX, tstX, trnY, tstY)
-plt.savefig('plots/Heart_NaiveBayes_holdout_estimators.png')
-
-print('Holdout score:', score_holdout)
-
-
-# k-fold cross validation (StratifiedKFold)
-n_splits = 5
-skf = StratifiedKFold(n_splits, shuffle=True)
-skf.get_n_splits(X, y)
-
-clf_crossval = np.empty(n_splits, dtype=GaussianNB)
-score_crossval = np.empty(n_splits, dtype=np.ndarray)
-i = 0
-for train_index, test_index in skf.split(X, y):
-    # print("TRAIN:", train_index, "TEST:", test_index)
-    X_train, X_test = X[train_index], X[test_index]
-    y_train, y_test = y[train_index], y[test_index]
+def main():
+    # get data
+    data: pd.DataFrame = pd.read_csv('data/heart_failure_clinical_records_dataset.csv')
+    y: np.ndarray = data.pop('DEATH_EVENT').values
+    X: np.ndarray = data.values
+    labels = pd.unique(y)
     
-    clf_crossval[i] = NaiveBayesModel(X_train, X_test, y_train, y_test)
-    plt.savefig('plots/Heart_NaiveBayes_CrossVal5_#'+str(i)+'.png')
-    xvalues, score_crossval[i] = NaiveBayesEstimation(X_train, X_test, y_train, y_test)
-    plt.savefig('plots/Heart_NaiveBayes_CrossVal5_#'+str(i)+'_estimators.png')
-    i+=1
+    
+    # hold-out (train_test_split)
+    trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y)
+    
+    clf_holdout = NaiveBayesModel(trnX, tstX, trnY, tstY)
+    plt.savefig('plots/Heart_NaiveBayes_holdout.png')
+    _, score_holdout = NaiveBayesEstimation(trnX, tstX, trnY, tstY)
+    plt.savefig('plots/Heart_NaiveBayes_holdout_estimators.png')
+    
+    print('Holdout score:', score_holdout)
+    
+    
+    # k-fold cross validation (StratifiedKFold)
+    n_splits = 5
+    skf = StratifiedKFold(n_splits, shuffle=True)
+    skf.get_n_splits(X, y)
+    
+    clf_crossval = np.empty(n_splits, dtype=GaussianNB)
+    score_crossval = np.empty(n_splits, dtype=np.ndarray)
+    i = 0
+    for train_index, test_index in skf.split(X, y):
+        # print("TRAIN:", train_index, "TEST:", test_index)
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
+        
+        clf_crossval[i] = NaiveBayesModel(X_train, X_test, y_train, y_test)
+        plt.savefig('plots/Heart_NaiveBayes_CrossVal5_#'+str(i)+'.png')
+        xvalues, score_crossval[i] = NaiveBayesEstimation(X_train, X_test, y_train, y_test)
+        plt.savefig('plots/Heart_NaiveBayes_CrossVal5_#'+str(i)+'_estimators.png')
+        i+=1
+    
+    
+    # CrossVal: find max, mean, std
+    score_best = np.max([score_crossval[i] for i in range(n_splits)])
+    score_bestarg = np.argmax([score_crossval[i] for i in range(n_splits)])
+    
+    print('CrossVal best estimator: %s with score %.2f' % (xvalues[score_bestarg % len(xvalues)], score_best))
+    
+    score_mean = np.mean(score_crossval)
+    score_std = np.std([score_crossval[i][0] for i in range(n_splits)])
+    print('CrossVal mean score:', score_mean)
+    print('CrossVal std: %.4f' % score_std)
+    
+    plt.figure()
+    ds.bar_chart(xvalues, score_mean, title='Comparison of Naive Bayes Models', ylabel='accuracy', percentage=True)
+    plt.savefig('plots/Heart_NaiveBayes_CrossVal5_mean_estimators.png')
+    plt.show()
 
 
-# CrossVal: find max, mean, std
-score_best = np.max([score_crossval[i] for i in range(n_splits)])
-score_bestarg = np.argmax([score_crossval[i] for i in range(n_splits)])
-
-print('CrossVal best estimator: %s with score %.2f' % (xvalues[score_bestarg % len(xvalues)], score_best))
-
-score_mean = np.mean(score_crossval)
-score_std = np.std([score_crossval[i][0] for i in range(n_splits)])
-print('CrossVal mean score:', score_mean)
-print('CrossVal std: %.4f' % score_std)
-
-plt.figure()
-ds.bar_chart(xvalues, score_mean, title='Comparison of Naive Bayes Models', ylabel='accuracy', percentage=True)
-plt.savefig('plots/Heart_NaiveBayes_CrossVal5_mean_estimators.png')
-plt.show()
+if __name__ == "__main__":
+   main()
