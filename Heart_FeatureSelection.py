@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from sklearn.feature_selection import chi2, f_classif, mutual_info_classif, SelectKBest, SelectPercentile, SelectFpr, VarianceThreshold
 import ds_functions as ds
 
+np.set_printoptions(suppress=True)
+
 # get data
 data: pd.DataFrame = pd.read_csv('data/heart_failure_clinical_records_dataset.csv')
 y: np.ndarray = data.pop('DEATH_EVENT').values
@@ -16,31 +18,31 @@ labels = pd.unique(y)
 
 # chi2
 chi, pval = chi2(X, y)
-print('\nChi2 test scores:', chi)
-print('\nChi2 p-values:', pval)
+print('\nChi2 test scores:\n', chi)
+print('Chi2 p-values:\n', pval)
 
 # f_classif (ANOVA)
 fvalue, pval = f_classif(X, y)
-print('\nANOVA test scores:', fvalue)
-print('\nANOVA p-values:', pval)
+print('\nANOVA test scores:\n', fvalue)
+print('ANOVA p-values:\n', pval)
 
 # mutual_info_classif
 mutual_info = mutual_info_classif(X, y, n_neighbors=3)
-print('\n MI scores:', mutual_info)
+print('\nMI scores:\n', mutual_info)
 
 # SelectKBest (highest scoring number)
 selector = SelectKBest(mutual_info_classif, k=2)
 X_new = selector.fit_transform(X, y)
-print('Scores:', selector.scores_)
-print('\nSelectKBest - Original data space:\n', X[0:3])
-print('\nSelectKBest - New data space:\n', X_new[0:3])
+print('\nScores:', selector.scores_)
+print('\nSelectKBest - Original data space:\n', X[0])
+print('\nSelectKBest - New data space:\n', X_new[0])
 
 # SelectPercentile (highest scoring percentage)
 selector = SelectPercentile(f_classif, percentile=50)
 X_new = selector.fit_transform(X, y)
 print("P-values:",selector.pvalues_)
-print('\nSelectKBest - Original data space:\n', X[0:3])
-print('\nSelectKBest - New data space:\n', X_new[0:3])
+print('\nSelectKBest - Original data space:\n', X[0])
+print('\nSelectKBest - New data space:\n', X_new[0])
 
 # SelectFpr (false positive rate)
 selector = SelectFpr(chi2, alpha=0.01)
