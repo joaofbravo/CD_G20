@@ -14,7 +14,7 @@ def NaiveBayesModel(X_train, X_test, y_train, y_test):
     clf.fit(X_train, y_train)
     prd_trn = clf.predict(X_train)
     prd_tst = clf.predict(X_test)
-    ds.plot_evaluation_results(pd.unique(y), y_train, prd_trn, y_test, prd_tst)
+    ds.plot_evaluation_results(pd.unique(np.concatenate((y_train, y_test))), y_train, prd_trn, y_test, prd_tst)
     return clf
 
 
@@ -41,7 +41,7 @@ def main():
     data: pd.DataFrame = pd.read_csv('data/heart_failure_clinical_records_dataset.csv')
     y: np.ndarray = data.pop('DEATH_EVENT').values
     X: np.ndarray = data.values
-    labels = pd.unique(y)
+    # labels = pd.unique(y)
     
     
     # hold-out (train_test_split)
