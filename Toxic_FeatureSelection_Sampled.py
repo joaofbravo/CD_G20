@@ -107,15 +107,34 @@ NaiveBayesTest(X, y, nsamples)
 ##### Filters - Unsupervised #####
 
 # variance
+# NO FILTER FOR threshold < 0.01
 # SAME PERFORMANCE AS ORIGINAL FOR ALL THRESHOLDS
 selector = VarianceThreshold()
 selector.fit(X)
 # print('\nFeature variance:\n', selector.variances_)
 
-threshold = 0.1
+threshold = 0.01
 selector = VarianceThreshold(threshold)
 X_new = selector.fit_transform(X)
 print('\nVariance (threshold={}) - Number of features: {}'.format(threshold, len(X_new[0])))
+# print('Selected indices:', selector.get_support(indices=True))
+# print('New data space:', X_new[0])
+
+NaiveBayesTest(X_new, y, nsamples)
+
+threshold = 0.05
+selector = VarianceThreshold(threshold)
+X_new = selector.fit_transform(X)
+print('Variance (threshold={}) - Number of features: {}'.format(threshold, len(X_new[0])))
+# print('Selected indices:', selector.get_support(indices=True))
+# print('New data space:', X_new[0])
+
+NaiveBayesTest(X_new, y, nsamples)
+
+threshold = 0.1
+selector = VarianceThreshold(threshold)
+X_new = selector.fit_transform(X)
+print('Variance (threshold={}) - Number of features: {}'.format(threshold, len(X_new[0])))
 # print('Selected indices:', selector.get_support(indices=True))
 # print('New data space:', X_new[0])
 

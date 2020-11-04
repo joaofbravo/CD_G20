@@ -84,6 +84,7 @@ X_new = selector.fit_transform(X, y)
 # print('SelectKBest (k = {}) - Selected indices: {}'.format(k, selector.get_support(indices=True)))
 # print('New data space:', X_new[0])
 
+print('\nSelectKBest (k = {})'.format(k))
 # NaiveBayesTest(X_new, y, 'MI_kBest='+str(k))
 
 
@@ -92,7 +93,7 @@ percentile = 50
 selector = SelectPercentile(f_classif, percentile=percentile)
 X_new = selector.fit_transform(X, y)
 # print('\nSelectPercentile p-values:\n', selector.pvalues_)
-print('SelectPercentile ({}%) - Number of features: {}'.format(percentile, len(X_new[0])))
+print('\nSelectPercentile ({}%) - Number of features: {}'.format(percentile, len(X_new[0])))
 # print('Selected indices:', selector.get_support(indices=True))
 # print('New data space:', X_new[0])
 
@@ -109,7 +110,7 @@ selector.fit(X)
 threshold = 0.1
 selector = VarianceThreshold(threshold)
 X_new = selector.fit_transform(X)
-print('Variance (threshold={}) - Number of features: {}'.format(threshold, len(X_new[0])))
+print('\nVariance (threshold={}) - Number of features: {}'.format(threshold, len(X_new[0])))
 # print('Selected indices:', selector.get_support(indices=True))
 # print('New data space:', X_new[0])
 
