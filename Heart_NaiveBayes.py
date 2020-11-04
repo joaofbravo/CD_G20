@@ -45,18 +45,18 @@ if __name__ == "__main__":
     
     
     # hold-out (train_test_split)
-    trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y)
+    # trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y)
     
-    clf_holdout = NaiveBayesModel(trnX, tstX, trnY, tstY)
-    plt.savefig('plots/Heart_NaiveBayes_holdout.png')
-    _, score_holdout = NaiveBayesEstimation(trnX, tstX, trnY, tstY)
-    plt.savefig('plots/Heart_NaiveBayes_holdout_estimators.png')
+    # clf_holdout = NaiveBayesModel(trnX, tstX, trnY, tstY)
+    # plt.savefig('plots/Heart_NaiveBayes_holdout.png')
+    # _, score_holdout = NaiveBayesEstimation(trnX, tstX, trnY, tstY)
+    # plt.savefig('plots/Heart_NaiveBayes_holdout_estimators.png')
     
-    print('Holdout score:', score_holdout)
+    # print('Holdout score:', score_holdout)
     
     
     # k-fold cross validation (StratifiedKFold)
-    n_splits = 5
+    n_splits = 10
     skf = StratifiedKFold(n_splits, shuffle=True)
     skf.get_n_splits(X, y)
     
