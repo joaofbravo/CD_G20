@@ -38,7 +38,7 @@ def NaiveBayesEstimation(X_train, X_test, y_train, y_test):
 
 
 if __name__ == "__main__":
-    data: pd.DataFrame = pd.read_csv('data/heart_failure_clinical_records_dataset.csv')
+    data: pd.DataFrame = pd.read_csv('data/heart_failure_clinical_records_dataset_f_g.csv')
     y: np.ndarray = data.pop('DEATH_EVENT').values
     X: np.ndarray = data.values
     # labels = pd.unique(y)
@@ -48,9 +48,9 @@ if __name__ == "__main__":
     trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y)
     
     clf_holdout = NaiveBayesModel(trnX, tstX, trnY, tstY)
-    plt.savefig('plots/Heart_NaiveBayes_holdout.png')
+    plt.savefig('plots/Heart_NaiveBayes_f_g_holdout.png')
     _, score_holdout = NaiveBayesEstimation(trnX, tstX, trnY, tstY)
-    plt.savefig('plots/Heart_NaiveBayes_holdout_estimators.png')
+    plt.savefig('plots/Heart_NaiveBayes_f_g_holdout_estimators.png')
     
     print('Holdout score:', score_holdout)
     
@@ -69,9 +69,9 @@ if __name__ == "__main__":
         y_train, y_test = y[train_index], y[test_index]
         
         clf_crossval[i] = NaiveBayesModel(X_train, X_test, y_train, y_test)
-        plt.savefig('plots/Heart_NaiveBayes_CrossVal5_#'+str(i)+'.png')
+        plt.savefig('plots/Heart_NaiveBayes_f_g_CrossVal5_#'+str(i)+'.png')
         xvalues, score_crossval[i] = NaiveBayesEstimation(X_train, X_test, y_train, y_test)
-        plt.savefig('plots/Heart_NaiveBayes_CrossVal5_#'+str(i)+'_estimators.png')
+        plt.savefig('plots/Heart_NaiveBayes_f_g_CrossVal5_#'+str(i)+'_estimators.png')
         i+=1
     
     
@@ -88,5 +88,5 @@ if __name__ == "__main__":
     
     plt.figure()
     ds.bar_chart(xvalues, score_mean, title='Comparison of Naive Bayes Models', ylabel='accuracy', percentage=True)
-    plt.savefig('plots/Heart_NaiveBayes_CrossVal5_mean_estimators.png')
+    plt.savefig('plots/Heart_NaiveBayes_f_g_CrossVal5_mean_estimators.png')
     plt.show()
