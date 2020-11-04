@@ -19,15 +19,14 @@ chi, pval = chi2(X, y)
 print('\nChi2 test scores:', chi)
 print('\nChi2 p-values:', pval)
 
-# f_classif
-f, pval = f_classif(X, y)
-print('\nChi2 test scores:', chi)
-print('\nChi2 p-values:', pval)
+# f_classif (ANOVA)
+fvalue, pval = f_classif(X, y)
+print('\nANOVA test scores:', fvalue)
+print('\nANOVA p-values:', pval)
 
-# chi2
-chi, pval = chi2(X, y)
-print('\nChi2 test scores:', chi)
-print('\nChi2 p-values:', pval)
+# mutual_info_classif
+mutual_info = mutual_info_classif(X, y, n_neighbors=3)
+print('\n MI scores:', mutual_info)
 
 # SelectKBest (highest scoring number)
 selector = SelectKBest(mutual_info_classif, k=2)
@@ -62,7 +61,11 @@ print('\nFeature variance =', selector.variances_)
 
 selector = VarianceThreshold(threshold=0.2)
 X_new = selector.fit_transform(X)
-print('\nNumber of features =', len(X_new[0]))
+print('\nNumber of features (threshold=0.2) =', len(X_new[0]))
+
+selector = VarianceThreshold(threshold=0.25)
+X_new = selector.fit_transform(X)
+print('Number of features (threshold=0.25) =', len(X_new[0]), ', indices:', selector.get_support(indices=True))
 
 
 ##### Wrappers #####
