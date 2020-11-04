@@ -14,18 +14,18 @@ from Heart_NaiveBayes import NaiveBayesModel, NaiveBayesEstimation
 
 
 def NaiveBayesTest(X, y, savename=None):
-    trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y)
+    trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y, random_state=None)
 
     _ = NaiveBayesModel(trnX, tstX, trnY, tstY)
     if savename is not None:
         plt.savefig('plots/Heart_FeatureSelection_'+savename+'_NB.png')
     
-    _, score_holdout = NaiveBayesEstimation(trnX, tstX, trnY, tstY)
+    _, score = NaiveBayesEstimation(trnX, tstX, trnY, tstY)
     if savename is not None:
         plt.savefig('plots/Heart_FetureSelection_'+savename+'_NBestimators.png')
     
-    print('NB holdout score:', score_holdout)
-    return
+    print('NB holdout score:', score)
+    return score
 
 
 np.set_printoptions(precision=4)
