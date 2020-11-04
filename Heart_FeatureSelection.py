@@ -12,8 +12,14 @@ from sklearn.feature_selection import chi2, f_classif, mutual_info_classif, Sele
 from Heart_NaiveBayes import NaiveBayesModel, NaiveBayesEstimation
 # import ds_functions as ds
 
+
+def NaiveBayesTest():
+    pass
+
+
 np.set_printoptions(precision=4)
-# np.set_printoptions(suppress=True)
+# np.set_printoptions(suppress=True)    
+
 
 # get data
 data: pd.DataFrame = pd.read_csv('data/heart_failure_clinical_records_dataset.csv')
@@ -100,3 +106,4 @@ print('Selected indices:', selector.get_support(indices=True))
 
 ##### Wrappers #####
 
+# ...
