@@ -9,22 +9,23 @@ from sklearn.model_selection import train_test_split
 from Heart_NaiveBayes import NaiveBayesModel, NaiveBayesEstimation
 
 
-def NaiveBayesTest(X, y, savename=None):
-    trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y, random_state=69)
+def NaiveBayesTest(X, y, nsamples=10):
+    score = np.empty((nsamples, 3))
 
-    NaiveBayesModel(trnX, tstX, trnY, tstY)
-    if savename is not None:
-        plt.savefig('plots/Heart_FeatureSelection_'+savename+'_NB.png')
+    for i in range(nsamples):
+        trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y)
+        NaiveBayesModel(trnX, tstX, trnY, tstY)
+        _, score[i] = NaiveBayesEstimation(trnX, tstX, trnY, tstY)
     
-    _, score = NaiveBayesEstimation(trnX, tstX, trnY, tstY)
-    if savename is not None:
-        plt.savefig('plots/Heart_FetureSelection_'+savename+'_NBestimators.png')
-    
-    print('NB holdout score:', score)
+    print('Mean:', np.mean(score, axis=0))
+    print('Best:', np.max(score, axis=0))
+    print('Std:', np.std(score, axis=0))
     return score
 
 
-np.set_printoptions(precision=4, suppress=True)    
+np.set_printoptions(precision=4, suppress=True)
+
+nsamples = 10
 
 # get data
 data: pd.DataFrame = pd.read_csv('data/heart_failure_clinical_records_dataset.csv')
@@ -36,7 +37,7 @@ X: np.ndarray = data.values
 # original results
 print('X shape:', X.shape)
 print('\nOriginal data space:\n', X[0])
-NaiveBayesTest(X, y)
+NaiveBayesTest(X, y, nsamples)
 
 ##### Filters - Classification #####
 
@@ -55,7 +56,7 @@ print('SelectFpr - Number of features:', len(X_new[0]))
 # print('Selected indices:', selector.get_support(indices=True))
 # print('New data space:', X_new[0])
 
-NaiveBayesTest(X_new, y, 'chi2_FPR_alpha='+str(alpha))
+NaiveBayesTest(X_new, y, 10)
 
 # - SelectFdr (false discovery rate)
 selector = SelectFdr(chi2, alpha=alpha)
@@ -64,7 +65,7 @@ print('SelectFdr - Number of features:', len(X_new[0]))
 # print('Selected indices:', selector.get_support(indices=True))
 # print('New data space:', X_new[0])
 
-# NaiveBayesTest(X_new, y, 'chi2_FDR_alpha='+str(alpha))
+# NaiveBayesTest(X_new, y, 10)
 
 # - SelectFwe (family wise error) 
 selector = SelectFwe(chi2, alpha=alpha)
@@ -73,7 +74,7 @@ print('SelectFwe - Number of features:', len(X_new[0]))
 print('Selected indices:', selector.get_support(indices=True))
 # print('New data space:', X_new[0])
 
-# NaiveBayesTest(X_new, y, 'chi2_FWE_alpha='+str(alpha))
+# NaiveBayesTest(X_new, y, 10)
 
 
 # mutual_info_classif - SelectKBest (highest scoring number)
@@ -84,7 +85,7 @@ print('\nSelectKBest scores:\n', selector.scores_)
 print('SelectKBest (k = {}) - Selected indices: {}'.format(k, selector.get_support(indices=True)))
 # print('New data space:', X_new[0])
 
-NaiveBayesTest(X_new, y, 'MI_kBest='+str(k))
+NaiveBayesTest(X_new, y, 10)
 
 
 # ANOVA (f_classif) - SelectPercentile (highest scoring percentage)
@@ -96,7 +97,7 @@ print('SelectPercentile ({}%) - Number of features: {}'.format(percentile, len(X
 print('Selected indices:', selector.get_support(indices=True))
 # print('New data space:', X_new[0])
 
-NaiveBayesTest(X_new, y, 'ANOVA_percent='+str(percentile)+'%')
+NaiveBayesTest(X_new, y, 10)
 
 
 ##### Filters - Unsupervised #####
@@ -113,7 +114,7 @@ print('Variance (threshold={}) - Number of features: {}'.format(threshold, len(X
 # print('Selected indices:', selector.get_support(indices=True))
 # print('New data space:', X_new[0])
 
-# NaiveBayesTest(X_new, y, 'variance_trsh='+str(threshold))
+# NaiveBayesTest(X_new, y, 10)
 
 threshold = 0.25
 selector = VarianceThreshold(threshold)
@@ -122,7 +123,7 @@ print('Variance (threshold={}) - Number of features: {}'.format(threshold, len(X
 print('Selected indices:', selector.get_support(indices=True))
 # print('New data space:', X_new[0])
 
-NaiveBayesTest(X_new, y, 'variance_trsh='+str(threshold))
+NaiveBayesTest(X_new, y, 10)
 
 
 ##### Wrappers #####
