@@ -11,11 +11,11 @@ from sklearn.feature_selection import RFECV, SelectFromModel
 data: pd.DataFrame = pd.read_csv('data/qsar_oral_toxicity.csv', header=None, sep =';')
 y: np.ndarray = data.pop(1024).values
 X: np.ndarray = data.values
-labels = pd.unique(y)
+# labels = pd.unique(y)
 
 ##### RFECV (recursive feature elemination with crossVal)
-classifier = DecisionTreeClassifier(min_samples_leaf=1, max_depth=None, criterion='entropy', min_impurity_decrease=0.02)
-rfecv = RFECV(estimator=classifier, step=1, cv=StratifiedKFold(5), scoring='accuracy')
+classifier = DecisionTreeClassifier(min_samples_leaf=1, criterion='entropy')
+rfecv = RFECV(estimator=classifier, step=1, cv=StratifiedKFold(5), scoring='accuracy', n_jobs=-1)
 rfecv.fit(X, y)
 
 # plot results
