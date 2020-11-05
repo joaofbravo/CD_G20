@@ -18,14 +18,14 @@ def NaiveBayesTest(X, y, nsamples=10):
         _, score[i] = NaiveBayesEstimation(trnX, tstX, trnY, tstY)
     
     print('Mean:', np.mean(score, axis=0))
-    print('Best:', np.max(score, axis=0))
+    # print('Best:', np.max(score, axis=0))
     print('Std:', np.std(score, axis=0))
     return score
 
 
 np.set_printoptions(precision=4, suppress=True)
 
-nsamples = 10
+nsamples = 100
 
 # get data
 data: pd.DataFrame = pd.read_csv('data/qsar_oral_toxicity.csv', header=None, sep =';')
@@ -41,74 +41,75 @@ NaiveBayesTest(X, y, nsamples)
 
 # ##### Filters - Classification #####
 
-# # chi2
-# # 
-# chi, pval = chi2(X, y)
-# # print('\nChi2 test scores:\n', chi)
-# # print('Chi2 p-values:\n', pval)
+# chi2
+# BETTER PERFORMANCE FOR alpha = 0.001, DECREASES FOR BIGGER alpha
+chi, pval = chi2(X, y)
+# print('\nChi2 test scores:\n', chi)
+# print('Chi2 p-values:\n', pval)
 
-# alpha = 0.01
-# print('\nalpha =', alpha)
+alpha = 0.001
+print('\nalpha =', alpha)
 
-# # - SelectFpr (false positive rate)
-# selector = SelectFpr(chi2, alpha=alpha)
-# X_new = selector.fit_transform(X, y)
-# print('SelectFpr - Number of features:', len(X_new[0]))
-# # print('Selected indices:', selector.get_support(indices=True))
-# # print('New data space:', X_new[0])
+# - SelectFpr (false positive rate)
+selector = SelectFpr(chi2, alpha=alpha)
+X_new = selector.fit_transform(X, y)
+print('SelectFpr - Number of features:', len(X_new[0]))
+# print('Selected indices:', selector.get_support(indices=True))
+# print('New data space:', X_new[0])
 
-# NaiveBayesTest(X_new, y, nsamples)
+NaiveBayesTest(X_new, y, nsamples)
 
-# # - SelectFdr (false discovery rate)
-# selector = SelectFdr(chi2, alpha=alpha)
-# X_new = selector.fit_transform(X, y)
-# print('SelectFdr - Number of features:', len(X_new[0]))
-# # print('Selected indices:', selector.get_support(indices=True))
-# # print('New data space:', X_new[0])
+# - SelectFdr (false discovery rate)
+selector = SelectFdr(chi2, alpha=alpha)
+X_new = selector.fit_transform(X, y)
+print('SelectFdr - Number of features:', len(X_new[0]))
+# print('Selected indices:', selector.get_support(indices=True))
+# print('New data space:', X_new[0])
 
-# NaiveBayesTest(X_new, y, nsamples)
+NaiveBayesTest(X_new, y, nsamples)
 
-# # - SelectFwe (family wise error) 
-# selector = SelectFwe(chi2, alpha=alpha)
-# X_new = selector.fit_transform(X, y)
-# print('SelectFwe - Number of features:', len(X_new[0]))
-# # print('Selected indices:', selector.get_support(indices=True))
-# # print('New data space:', X_new[0])
+# - SelectFwe (family wise error) 
+selector = SelectFwe(chi2, alpha=alpha)
+X_new = selector.fit_transform(X, y)
+print('SelectFwe - Number of features:', len(X_new[0]))
+# print('Selected indices:', selector.get_support(indices=True))
+# print('New data space:', X_new[0])
 
-# NaiveBayesTest(X_new, y, nsamples)
-
-
-# # mutual_info_classif - SelectKBest (highest scoring number)
-# # 
-# k = 4
-# selector = SelectKBest(mutual_info_classif, k)
-# X_new = selector.fit_transform(X, y)
-# # print('\nSelectKBest scores:\n', selector.scores_)
-# # print('\nSelectKBest (k = {}) - Selected indices: {}'.format(k, selector.get_support(indices=True)))
-# # print('New data space:', X_new[0])
-
-# print('\nSelectKBest (k = {})'.format(k))
-# NaiveBayesTest(X_new, y, nsamples)
+NaiveBayesTest(X_new, y, nsamples)
 
 
-# # ANOVA (f_classif) - SelectPercentile (highest scoring percentage)
-# # SAME PERFORMANCE AS ORIGINAL FOR ALL PERCENTILES
-# percentile = 50
-# selector = SelectPercentile(f_classif, percentile=percentile)
-# X_new = selector.fit_transform(X, y)
-# # print('\nSelectPercentile p-values:\n', selector.pvalues_)
-# print('\nSelectPercentile ({}%) - Number of features: {}'.format(percentile, len(X_new[0])))
-# # print('Selected indices:', selector.get_support(indices=True))
-# # print('New data space:', X_new[0])
+# mutual_info_classif - SelectKBest (highest scoring number)
+# BETTER PERFORMANCE FOR k<100, DECREASES FOR HIGHER k
+k = 100
+selector = SelectKBest(mutual_info_classif, k)
+X_new = selector.fit_transform(X, y)
+# print('\nSelectKBest scores:\n', selector.scores_)
+# print('\nSelectKBest (k = {}) - Selected indices: {}'.format(k, selector.get_support(indices=True)))
+# print('New data space:', X_new[0])
 
-# NaiveBayesTest(X_new, y, nsamples)
+print('\nSelectKBest (k = {})'.format(k))
+NaiveBayesTest(X_new, y, nsamples)
+
+
+# ANOVA (f_classif) - SelectPercentile (highest scoring percentage)
+# BETTER PERFORMANCE FOR percentile = 10/20, DECREASES AS percentile INCREASES
+percentile = 10
+selector = SelectPercentile(f_classif, percentile=percentile)
+X_new = selector.fit_transform(X, y)
+# print('\nSelectPercentile p-values:\n', selector.pvalues_)
+print('\nSelectPercentile ({}%) - Number of features: {}'.format(percentile, len(X_new[0])))
+# print('Selected indices:', selector.get_support(indices=True))
+# print('New data space:', X_new[0])
+
+NaiveBayesTest(X_new, y, nsamples)
 
 
 ##### Filters - Unsupervised #####
 
 # variance
 # NO FILTER FOR threshold < 0.01
-# SAME PERFORMANCE AS ORIGINAL FOR ALL THRESHOLDS
+# SAME PERFORMANCE AS ORIGINAL FOR threshold < 0.01, DECREASES FOR BIGGER threshold
+# NO FEATURES IF threshold > 0.25
 selector = VarianceThreshold()
 selector.fit(X)
 # print('\nFeature variance:\n', selector.variances_)
@@ -117,33 +118,6 @@ threshold = 0.01
 selector = VarianceThreshold(threshold)
 X_new = selector.fit_transform(X)
 print('\nVariance (threshold={}) - Number of features: {}'.format(threshold, len(X_new[0])))
-# print('Selected indices:', selector.get_support(indices=True))
-# print('New data space:', X_new[0])
-
-NaiveBayesTest(X_new, y, nsamples)
-
-threshold = 0.05
-selector = VarianceThreshold(threshold)
-X_new = selector.fit_transform(X)
-print('Variance (threshold={}) - Number of features: {}'.format(threshold, len(X_new[0])))
-# print('Selected indices:', selector.get_support(indices=True))
-# print('New data space:', X_new[0])
-
-NaiveBayesTest(X_new, y, nsamples)
-
-threshold = 0.1
-selector = VarianceThreshold(threshold)
-X_new = selector.fit_transform(X)
-print('Variance (threshold={}) - Number of features: {}'.format(threshold, len(X_new[0])))
-# print('Selected indices:', selector.get_support(indices=True))
-# print('New data space:', X_new[0])
-
-NaiveBayesTest(X_new, y, nsamples)
-
-threshold = 0.2
-selector = VarianceThreshold(threshold)
-X_new = selector.fit_transform(X)
-print('Variance (threshold={}) - Number of features: {}'.format(threshold, len(X_new[0])))
 # print('Selected indices:', selector.get_support(indices=True))
 # print('New data space:', X_new[0])
 

@@ -106,15 +106,6 @@ selector = VarianceThreshold()
 selector.fit(X)
 print('\nFeature variance:\n', selector.variances_)
 
-threshold = 0.2
-selector = VarianceThreshold(threshold)
-X_new = selector.fit_transform(X)
-print('Variance (threshold={}) - Number of features: {}'.format(threshold, len(X_new[0])))
-# print('Selected indices:', selector.get_support(indices=True))
-# print('New data space:', X_new[0])
-
-# NaiveBayesTest(X_new, y, 'variance_trsh='+str(threshold))
-
 threshold = 0.25
 selector = VarianceThreshold(threshold)
 X_new = selector.fit_transform(X)

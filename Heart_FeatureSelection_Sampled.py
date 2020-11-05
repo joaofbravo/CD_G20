@@ -18,7 +18,7 @@ def NaiveBayesTest(X, y, nsamples=10):
         _, score[i] = NaiveBayesEstimation(trnX, tstX, trnY, tstY)
     
     print('Mean:', np.mean(score, axis=0))
-    print('Best:', np.max(score, axis=0))
+    # print('Best:', np.max(score, axis=0))
     print('Std:', np.std(score, axis=0))
     return score
 
@@ -110,15 +110,6 @@ NaiveBayesTest(X_new, y, nsamples)
 selector = VarianceThreshold()
 selector.fit(X)
 # print('\nFeature variance:\n', selector.variances_)
-
-threshold = 0.2
-selector = VarianceThreshold(threshold)
-X_new = selector.fit_transform(X)
-print('\nVariance (threshold={}) - Number of features: {}'.format(threshold, len(X_new[0])))
-# print('Selected indices:', selector.get_support(indices=True))
-# print('New data space:', X_new[0])
-
-# NaiveBayesTest(X_new, y, nsamples)
 
 threshold = 0.3
 selector = VarianceThreshold(threshold)
