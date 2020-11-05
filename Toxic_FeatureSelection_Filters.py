@@ -90,7 +90,7 @@ NaiveBayesTest(X_new, y, 'MI_kBest='+str(k))
 
 
 ##### ANOVA (f_classif) - SelectPercentile (highest scoring percentage)
-percentile = 10
+percentile = 5
 selector = SelectPercentile(f_classif, percentile=percentile)
 X_new = selector.fit_transform(X, y)
 # print('\nSelectPercentile p-values:\n', selector.pvalues_)
