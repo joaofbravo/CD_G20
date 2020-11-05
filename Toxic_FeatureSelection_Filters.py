@@ -108,7 +108,7 @@ selector = VarianceThreshold()
 selector.fit(X)
 # print('\nFeature variance:\n', selector.variances_)
 
-threshold = 0.01
+threshold = 0.2
 selector = VarianceThreshold(threshold)
 X_new = selector.fit_transform(X)
 print('Variance (threshold={}) - Number of features: {}'.format(threshold, len(X_new[0])))
