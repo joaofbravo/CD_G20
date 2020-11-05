@@ -13,6 +13,8 @@ y: np.ndarray = data.pop(1024).values
 X: np.ndarray = data.values
 # labels = pd.unique(y)
 
+##### Wrappers #####
+
 ##### RFECV (recursive feature elemination with crossVal)
 classifier = DecisionTreeClassifier(min_samples_leaf=1, criterion='entropy')
 rfecv = RFECV(estimator=classifier, step=1, cv=StratifiedKFold(5), scoring='accuracy', n_jobs=-1)
