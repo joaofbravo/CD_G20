@@ -14,11 +14,11 @@ def NaiveBayesTest(X, y, savename=None):
 
     NaiveBayesModel(trnX, tstX, trnY, tstY)
     if savename is not None:
-        plt.savefig('plots/Toxic_FeatureSelection_'+savename+'_NB.png')
+        plt.savefig('plots/Toxic_FeatureSelection_Filter_'+savename+'_NB.png')
     
     _, score = NaiveBayesEstimation(trnX, tstX, trnY, tstY)
     if savename is not None:
-        plt.savefig('plots/Toxic_FetureSelection_'+savename+'_NBestimators.png')
+        plt.savefig('plots/Toxic_FetureSelection_Filter_'+savename+'_NBestimators.png')
     
     print('NB holdout score:', score)
     return score
@@ -46,7 +46,7 @@ chi, pval = chi2(X, y)
 # print('\nChi2 test scores:\n', chi)
 # print('Chi2 p-values:\n', pval)
 
-alpha = 0.001
+alpha = 1e-10
 print('\nalpha =', alpha)
 
 ### - SelectFpr (false positive rate)

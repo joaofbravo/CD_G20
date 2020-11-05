@@ -14,11 +14,11 @@ def NaiveBayesTest(X, y, savename=None):
 
     NaiveBayesModel(trnX, tstX, trnY, tstY)
     if savename is not None:
-        plt.savefig('plots/Heart_FeatureSelection_'+savename+'_NB.png')
+        plt.savefig('plots/Heart_FeatureSelection_Filter_'+savename+'_NB.png')
     
     _, score = NaiveBayesEstimation(trnX, tstX, trnY, tstY)
     if savename is not None:
-        plt.savefig('plots/Heart_FetureSelection_'+savename+'_NBestimators.png')
+        plt.savefig('plots/Heart_FetureSelection_Filter_'+savename+'_NBestimators.png')
     
     print('NB holdout score:', score)
     return score

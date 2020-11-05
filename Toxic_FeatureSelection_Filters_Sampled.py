@@ -41,13 +41,13 @@ NaiveBayesTest(X, y, nsamples)
 # ##### Filters - Classification #####
 
 ##### chi2
-# BETTER PERFORMANCE FOR alpha < 0.0001, DECREASES FOR BIGGER alpha
+# BETTER PERFORMANCE FOR alpha < 1e-10, DECREASES FOR BIGGER alpha
 
 chi, pval = chi2(X, y)
 # print('\nChi2 test scores:\n', chi)
 # print('Chi2 p-values:\n', pval)
 
-for alpha in (0.00001, 0.00005, 0.0001, 0.0005):
+for alpha in (1e-10, 1e-8, 1e-6, 1e-5, 1e-4):
     print('\nalpha =', alpha)
     
     ### - SelectFpr (false positive rate)
@@ -109,9 +109,9 @@ for percentile in (3, 5, 7, 10, 15, 20):
 ##### Filters - Unsupervised #####
 
 ##### variance
-# NO FILTER FOR threshold < 0.01
-# SAME PERFORMANCE AS ORIGINAL FOR threshold < 0.01, DECREASES FOR BIGGER threshold
 # NO FEATURES IF threshold > 0.25
+# BETTER PERFORMANCE FOR threshold > 0.2, DECREASES FOR SMALLER threshold
+# NO FILTER FOR threshold < 0.01
 
 selector = VarianceThreshold()
 selector.fit(X)
