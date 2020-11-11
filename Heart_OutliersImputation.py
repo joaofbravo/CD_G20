@@ -5,10 +5,12 @@ import g20_functions as g20
 from g20_functions import OUTLIER_METHODS
 
 data = g20.loadHeart()
+data.pop('time')
 columns = data.columns.copy()
 
 g20.correlationHeart(data, title = "Original Data")
 y: np.ndarray = data.pop('DEATH_EVENT').values
+
 X: np.ndarray = data.values
 labels = pd.unique(y)
 print(X.shape)
