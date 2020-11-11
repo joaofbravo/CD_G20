@@ -41,8 +41,7 @@ for k in range(len(max_depths)):
                 best_tree = rf
 
         values[f] = yvalues
-    ds.multiple_line_chart(n_estimators, values, ax=axs[0, k], title='Random Forests with max_depth=%d'%d,
-                           xlabel='nr estimators', ylabel='accuracy', percentage=True)
+    ds.multiple_line_chart(n_estimators, values, ax=axs[0, k], title='Random Forests with max_depth=%d'%d, xlabel='nr estimators', ylabel='accuracy', percentage=True)
 
 plt.show()
 print('Best results with depth=%d, %1.2f features and %d estimators, with accuracy=%1.2f'%(best[0], best[1], best[2], last_best))
