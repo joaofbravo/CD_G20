@@ -60,7 +60,7 @@ def holdoutKNN(X,y,labels,context,save_pics=False, train_size=0.7,
     plt.show()
         
 # k-fold cross validation (StratifiedKFold)
-def crossValKNN(X,y,labels,context,save_pics=False, train_size=0.7,n_splits = 5,
+def crossValKNN(X,y,labels,context,save_pics=False, n_splits = 5,
                nvalues = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19],dist = ['manhattan', 'euclidean', 'chebyshev']):
 
     skf = StratifiedKFold(n_splits, shuffle=True)
