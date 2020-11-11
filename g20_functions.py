@@ -28,6 +28,13 @@ def loadHeart():
 def loadToxic():
     return pd.read_csv('data/qsar_oral_toxicity.csv',header= None, sep =';')
 
+# split the data into x & y
+def xySplit(data,target='DEATH_EVENT'):
+    y: np.ndarray = data.pop(target).values
+    x: np.ndarray = data.values
+    labels = pd.unique(y)
+    return x,y,labels
+
 
 # returns scaled data with two different methods
 def scaleHeart(data):
@@ -46,16 +53,18 @@ def scaleHeart(data):
     return norm_data_zscore, norm_data_minmax
 
 # returns base data, and data for the 3 balancing methods
-def balanceData(data,target='DEATH_EVENT',save_pics=False):
-    
+def balanceData(data,dataset = "Heart",save_pics=False):
+    if dataset == "Heart":
+        target='DEATH_EVENT'
+    elif dataset == "Toxic":
+        target=1024
     target_count = data[target].value_counts()
     plt.figure()
     plt.title('Class balance')
     plt.bar(target_count.index, target_count.values)
     if save_pics:
-        plt.savefig()
-    else:
-        plt.show()
+        plt.savefig('plots/Class balance for '+dataset+' dataset.png')
+    plt.show()
     
     min_class = target_count.idxmin()
     ind_min_class = target_count.index.get_loc(min_class)
@@ -86,6 +95,8 @@ def balanceData(data,target='DEATH_EVENT',save_pics=False):
     fig = plt.figure()
     ds.multiple_bar_chart([target_count.index[ind_min_class], target_count.index[1-ind_min_class]], values,
                           title='Target', xlabel='frequency', ylabel='Class balance')
+    if save_pics:
+        plt.savefig('plots/Target for '+dataset+' dataset.png')
     plt.show()
     return values
 
