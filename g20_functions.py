@@ -33,6 +33,7 @@ def xySplit(data,target='DEATH_EVENT'):
     y: np.ndarray = data.pop(target).values
     x: np.ndarray = data.values
     labels = pd.unique(y)
+    data[target]=y
     return x,y,labels
 
 
