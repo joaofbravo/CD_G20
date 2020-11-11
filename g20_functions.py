@@ -58,6 +58,7 @@ def balanceData(data,dataset = "Heart",save_pics=False):
         target='DEATH_EVENT'
     elif dataset == "Toxic":
         target=1024
+    
     target_count = data[target].value_counts()
     plt.figure()
     plt.title('Class balance')
@@ -74,16 +75,21 @@ def balanceData(data,dataset = "Heart",save_pics=False):
     print('Proportion:', round(target_count[ind_min_class] / target_count[1-ind_min_class], 2), ': 1')
     
     RANDOM_STATE = 42 #The answer to the Ultimate Question of Life, the Universe, and Everything 
+    
+    
     values = {'Original': [target_count.values[ind_min_class], target_count.values[1-ind_min_class]]}
     
     df_class_min = data[data[target] == min_class]
     df_class_max = data[data[target] != min_class]
+    output = {'Original': pd.DataFrame().append(df_class_min).append(df_class_max)}
     
     df_under = df_class_max.sample(len(df_class_min))
     values['UnderSample'] = [target_count.values[ind_min_class], len(df_under)]
+    output['UnderSample'] = pd.DataFrame().append(df_class_min).append(df_under)
     
     df_over = df_class_min.sample(len(df_class_max), replace=True)
     values['OverSample'] = [len(df_over), target_count.values[1-ind_min_class]]
+    output['OverSample'] = pd.DataFrame().append(df_class_max).append(df_over)
     
     smote = SMOTE(sampling_strategy='minority', random_state=RANDOM_STATE)
     y = data.pop(target).values
@@ -91,6 +97,7 @@ def balanceData(data,dataset = "Heart",save_pics=False):
     smote_X, smote_y = smote.fit_sample(X, y)
     smote_target_count = pd.Series(smote_y).value_counts()
     values['SMOTE'] = [smote_target_count.values[ind_min_class], smote_target_count.values[1-ind_min_class]]
+    output['SMOTE'] = [X,y]
     
     fig = plt.figure()
     ds.multiple_bar_chart([target_count.index[ind_min_class], target_count.index[1-ind_min_class]], values,
@@ -98,7 +105,7 @@ def balanceData(data,dataset = "Heart",save_pics=False):
     if save_pics:
         plt.savefig('plots/Target for '+dataset+' dataset.png')
     plt.show()
-    return values
+    return output
 
 def dataShapeAndTypes(data):
     #Data records, variables and type
