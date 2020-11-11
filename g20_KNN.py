@@ -65,7 +65,7 @@ def crossValKNN(X,y,labels,context,save_pics=False, n_splits = 5,
 
     skf = StratifiedKFold(n_splits, shuffle=True)
     
-    print('\n-> 5-fold CrossVal for '+context+':')
+    print('\n-> '+str(n_splits)+'-fold CrossVal for '+context+':')
     acc_crossval = np.empty(n_splits, dtype=dict)
     i = 0
     for train_index, test_index in skf.split(X, y):
