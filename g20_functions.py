@@ -12,19 +12,85 @@ from sklearn.neighbors import LocalOutlierFactor
 from sklearn.ensemble import IsolationForest
 from sklearn.covariance import EllipticEnvelope
 import ds_functions as ds
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+register_matplotlib_converters()
+from imblearn.over_sampling import SMOTE
 
-
-#
+# loads up the heart dataset
 def loadHeart():
-    return pd.read_csv('data/heart_failure_clinical_records_dataset.csv')
+    data = pd.read_csv('data/heart_failure_clinical_records_dataset.csv')
+    
+    # the time column has to do with how the study kept up with the patients, does not make sense to include in the analysis
+    data.pop('time')
+    return data
 
+# loads up the toxic dataset
 def loadToxic():
     return pd.read_csv('data/qsar_oral_toxicity.csv',header= None, sep =';')
 
 
+# returns scaled data with two different methods
+def scaleHeart(data):
+    # exclude death_event from scaling, or you'll get problems later
+    death_event = data.pop('DEATH_EVENT').values
+    # print(data.describe(include='all'))
+    transf = StandardScaler(with_mean=True, with_std=True, copy=True).fit(data)
+    norm_data_zscore = pd.DataFrame(transf.transform(data), columns= data.columns)
+    norm_data_zscore['DEATH_EVENT'] = death_event
+    # print(norm_data_zscore.describe(include='all'))
+    
+    transf = MinMaxScaler(feature_range=(0, 1), copy=True).fit(data)
+    norm_data_minmax = pd.DataFrame(transf.transform(data), columns= data.columns)
+    norm_data_minmax['DEATH_EVENT'] = death_event
+    # print(norm_data_minmax.describe(include='all'))
+    return norm_data_zscore, norm_data_minmax
+
+# returns base data, and data for the 3 balancing methods
+def balanceData(data,target='DEATH_EVENT',save_pics=False):
+    
+    target_count = data[target].value_counts()
+    plt.figure()
+    plt.title('Class balance')
+    plt.bar(target_count.index, target_count.values)
+    if save_pics:
+        plt.savefig()
+    else:
+        plt.show()
+    
+    min_class = target_count.idxmin()
+    ind_min_class = target_count.index.get_loc(min_class)
+    
+    print('Minority class:', target_count[ind_min_class])
+    print('Majority class:', target_count[1-ind_min_class])
+    print('Proportion:', round(target_count[ind_min_class] / target_count[1-ind_min_class], 2), ': 1')
+    
+    RANDOM_STATE = 42 #The answer to the Ultimate Question of Life, the Universe, and Everything 
+    values = {'Original': [target_count.values[ind_min_class], target_count.values[1-ind_min_class]]}
+    
+    df_class_min = data[data[target] == min_class]
+    df_class_max = data[data[target] != min_class]
+    
+    df_under = df_class_max.sample(len(df_class_min))
+    values['UnderSample'] = [target_count.values[ind_min_class], len(df_under)]
+    
+    df_over = df_class_min.sample(len(df_class_max), replace=True)
+    values['OverSample'] = [len(df_over), target_count.values[1-ind_min_class]]
+    
+    smote = SMOTE(sampling_strategy='minority', random_state=RANDOM_STATE)
+    y = data.pop(target).values
+    X = data.values
+    smote_X, smote_y = smote.fit_sample(X, y)
+    smote_target_count = pd.Series(smote_y).value_counts()
+    values['SMOTE'] = [smote_target_count.values[ind_min_class], smote_target_count.values[1-ind_min_class]]
+    
+    fig = plt.figure()
+    ds.multiple_bar_chart([target_count.index[ind_min_class], target_count.index[1-ind_min_class]], values,
+                          title='Target', xlabel='frequency', ylabel='Class balance')
+    plt.show()
+    return values
+
 def dataShapeAndTypes(data):
     #Data records, variables and type
-    
     print(data.shape); print(data.dtypes)
 
 def correlationHeart(data, title = 'Correlation analysis'):
