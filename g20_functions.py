@@ -98,7 +98,9 @@ def balanceData(data,dataset = "Heart",save_pics=False):
     smote_X, smote_y = smote.fit_sample(X, y)
     smote_target_count = pd.Series(smote_y).value_counts()
     values['SMOTE'] = [smote_target_count.values[ind_min_class], smote_target_count.values[1-ind_min_class]]
-    output['SMOTE'] = [X,y]
+    temp = pd.DataFrame(X,columns=data.columns)
+    temp[target] = y
+    output['SMOTE'] = temp
     
     fig = plt.figure()
     ds.multiple_bar_chart([target_count.index[ind_min_class], target_count.index[1-ind_min_class]], values,
