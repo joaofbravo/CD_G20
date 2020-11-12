@@ -80,7 +80,7 @@ def crossValKNN(X,y,labels,context,save_pics=False, n_splits = 5,
         if save_pics:
             plt.savefig('plots/'+context+'_KNN_CrossVal'+str(n_splits)+'_#'+str(i)+'.png')
         plt.show()
-        prd_trn, prd_tst = KNNPerformance(X_train, X_test, y_train, y_test, best,labels)
+        prd_trn, prd_tst = KNNPerformance(X_train, X_test, y_train, y_test, best, labels)
         ds.plot_evaluation_results(labels, y_train, prd_trn, y_test, prd_tst)
         if save_pics:
             plt.savefig('plots/'+context+'_KNN_CrossVal'+str(n_splits)+'_#'+str(i)+'_performance.png')
@@ -109,4 +109,3 @@ def crossValKNN(X,y,labels,context,save_pics=False, n_splits = 5,
     n_best = nvalues[acc_bestarg % len(nvalues)]
     dist_best = dist[acc_bestarg // len(nvalues)]
     print('Best mean results: %d neighbors, %s metric, %.2f accuracy' % (n_best, dist_best, acc_best))
-

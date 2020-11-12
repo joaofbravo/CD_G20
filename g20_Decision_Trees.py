@@ -32,8 +32,7 @@ def DT(trnX, tstX, trnY, tstY,criteria,max_depths,min_impurity_decrease,context)
                     best_tree = tree
     
             values[d] = yvalues
-        ds.multiple_line_chart(min_impurity_decrease, values, ax=axs[0, k], title='Decision Trees with %s criteria'%f,
-                               xlabel='min_impurity_decrease', ylabel='accuracy', percentage=True)
+        ds.multiple_line_chart(min_impurity_decrease, values, ax=axs[0, k], title='Decision Trees with %s criteria'%f, xlabel='min_impurity_decrease', ylabel='accuracy', percentage=True)
     
     plt.show()
     print('Best results achieved with %s criteria, depth=%d and min_impurity_decrease=%1.2f ==> accuracy=%1.2f'%(best[0], best[1], best[2], last_best))

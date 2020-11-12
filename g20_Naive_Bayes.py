@@ -48,7 +48,7 @@ def holdoutNaiveBayes(X,y,labels,context,save_pics=False, train_size=0.7):
     if save_pics:
         plt.savefig('plots/'+context+'_NaiveBayes_holdout.png')
     plt.show()
-    _, score_holdout = NaiveBayesEstimation(trnX, tstX, trnY, tstY,context)
+    _, score_holdout = NaiveBayesEstimation(trnX, tstX, trnY, tstY, context)
     if save_pics:
         plt.savefig('plots/'+context+'_NaiveBayes_holdout_estimators.png')
     plt.show()
@@ -97,8 +97,3 @@ def crossValNaiveBayes(X,y,labels,context,save_pics=False, n_splits = 5):
     if save_pics:
         plt.savefig('plots/'+context+'_NaiveBayes_CrossVal'+str(n_splits)+'_mean_estimators.png')
     plt.show()
-
-
-
-    
-
