@@ -91,6 +91,6 @@ def crossValDT(X,y,labels,context,save_pics=False, n_splits = 5,
     
     print('\n-> Average for '+str(n_splits)+'-fold CrossVal for '+context+':')
     acc_mean = np.mean(acc_crossval)
-    acc_std = np.std([acc_crossval[i][0] for i in range(n_splits)])
     print('CrossVal mean score:', acc_mean)
+    acc_std = np.std(acc_crossval)
     print('CrossVal std: %.4f' % acc_std)
