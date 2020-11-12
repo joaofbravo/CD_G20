@@ -16,6 +16,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 register_matplotlib_converters()
 from imblearn.over_sampling import SMOTE
 
+
 # loads up the heart dataset
 def loadHeart():
     data = pd.read_csv('data/heart_failure_clinical_records_dataset.csv')
@@ -24,17 +25,19 @@ def loadHeart():
     data.pop('time')
     return data
 
+
 # loads up the toxic dataset
 def loadToxic():
-    return pd.read_csv('data/qsar_oral_toxicity.csv',header= None, sep =';')
+    return pd.read_csv('data/qsar_oral_toxicity.csv', header=None, sep =';')
+
 
 # split the data into x & y
-def xySplit(data,target='DEATH_EVENT'):
+def xySplit(data, target='DEATH_EVENT'):
     y: np.ndarray = data.pop(target).values
     x: np.ndarray = data.values
     labels = pd.unique(y)
-    data[target]=y
-    return x,y,labels
+    data[target] = y
+    return x, y, labels
 
 
 # returns scaled data with two different methods (for heart only)
@@ -57,8 +60,9 @@ def scaleData(data):
     # print(norm_data_minmax.describe(include='all'))
     return output
 
+
 # returns base data, and data for the 3 balancing methods
-def balanceData(data,dataset = "Heart",save_pics=False):
+def balanceData(data, dataset="Heart", save_pics=False):
     if dataset == "Heart":
         target='DEATH_EVENT'
     elif dataset == "Toxic":
@@ -79,8 +83,7 @@ def balanceData(data,dataset = "Heart",save_pics=False):
     print('Majority class:', target_count[1-ind_min_class])
     print('Proportion:', round(target_count[ind_min_class] / target_count[1-ind_min_class], 2), ': 1')
     
-    RANDOM_STATE = 42 #The answer to the Ultimate Question of Life, the Universe, and Everything 
-    
+    RANDOM_STATE = 42 # The answer to the Ultimate Question of Life, the Universe, and Everything
     
     values = {'Original': [target_count.values[ind_min_class], target_count.values[1-ind_min_class]]}
     
@@ -114,30 +117,34 @@ def balanceData(data,dataset = "Heart",save_pics=False):
     plt.show()
     return output
 
+
 def dataShapeAndTypes(data):
-    #Data records, variables and type
+    # Data records, variables and type
     print(data.shape); print(data.dtypes)
+
 
 def correlationHeart(data, title = 'Correlation analysis'):
     register_matplotlib_converters()
 
-    #Data correlation
-    
+    # Data correlation
     plt.figure(figsize=[12, 12])
     corr_mtx = data.corr()
     sns.heatmap(corr_mtx, xticklabels=corr_mtx.columns, yticklabels=corr_mtx.columns, annot=True, cmap='Blues')
     plt.title(title)
     plt.show()
 
+
 def correlationToxic(data):
     c = data.corr().abs()
     s = c.unstack()
     return s.sort_values(kind="quicksort")
 
+
 def topCorr(so, thresholds = [0.99]):
     return 1
 
-OUTLIER_METHODS = ["Isolation Forest","Elliptic Envelope","Local Outlier Factor"]
+
+OUTLIER_METHODS = ["Isolation Forest", "Elliptic Envelope", "Local Outlier Factor"]
 def outlierRemoval(X,Y, method, cont):
     if method == "Isolation Forest":
         iso = IsolationForest(contamination=cont)
@@ -150,4 +157,4 @@ def outlierRemoval(X,Y, method, cont):
         yhat = lof.fit_predict(X)
     mask = yhat != -1
     
-    return X[mask, :],Y[mask]
+    return X[mask, :], Y[mask]

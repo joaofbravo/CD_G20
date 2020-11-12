@@ -56,28 +56,38 @@ def GB(trnX, tstX, trnY, tstY, losses, criterions, learn_rates, n_estimators, ma
     print('\nBest results with loss={}, criterion={}, learning_rate={}, {} estimators, depth={} and {} features, with accuracy={:.3f}'.format(*best_par, last_best))
     return best_par, best_tree, last_best
 
+
 def GBPerformance(tree, trnX, tstX, trnY, tstY, labels):
     prd_trn = tree.predict(trnX)
     prd_tst = tree.predict(tstX)
     ds.plot_evaluation_results(labels, trnY, prd_trn, tstY, prd_tst)
 
 
-def holdoutGB(X,y,labels,context,save_pics=False, train_size=0.7,
-              min_impurity_decrease = [0.025, 0.01, 0.005, 0.0025, 0.001],
-              max_depths = [2, 5, 10, 15, 20, 25],criteria = ['entropy', 'gini']):
+def holdoutGB(X, y, labels, context, save_pics=False, train_size=0.7,
+               losses=['deviance', 'exponential'], # exponential == AdaBoost
+               criterions=['friedman_mse', 'mae'],
+               learn_rates=[0.01, 0.1, 0.5],
+               n_estimators = [10, 100, 200, 300],
+               max_depths=[5, 10, 25],
+               max_features=[.25, .5, 1]):
+
     trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y)
     print('-> Holdout for '+context+':')
-    best, best_tree, acc = DT(trnX, tstX, trnY, tstY,criteria,max_depths,min_impurity_decrease,context)
-    drawDT(best_tree,'Best tree for '+context,save_pics)
-    DTPerformance(best_tree,trnX, tstX, trnY, tstY,labels)
+    best_par, best_tree, acc = GB(trnX, tstX, trnY, tstY, losses, criterions, learn_rates, n_estimators, max_depths, max_features)
+    GBPerformance(best_tree, trnX, tstX, trnY, tstY,labels)
     if save_pics:
-        plt.savefig('plots/'+context+'_DT_Holdout_performance.png')
+        plt.savefig('plots/'+context+'_GB_Holdout_performance.png')
     plt.show()
 
 
-def crossValGB(X,y,labels,context,save_pics=False, n_splits = 5,
-              min_impurity_decrease = [0.025, 0.01, 0.005, 0.0025, 0.001],
-              max_depths = [2, 5, 10, 15, 20, 25],criteria = ['entropy', 'gini']):
+def crossValGB(X, y, labels, context, save_pics=False, n_splits = 5,
+               losses=['deviance', 'exponential'], # exponential == AdaBoost
+               criterions=['friedman_mse', 'mae'],
+               learn_rates=[0.01, 0.1, 0.5],
+               n_estimators = [10, 100, 200, 300],
+               max_depths=[5, 10, 25],
+               max_features=[.25, .5, 1]):
+    
     skf = StratifiedKFold(n_splits, shuffle=True)
     acc_crossval = np.empty(n_splits, dtype=dict)
     print('\n-> '+str(n_splits)+'-fold CrossVal for '+context+':')
@@ -87,11 +97,10 @@ def crossValGB(X,y,labels,context,save_pics=False, n_splits = 5,
         trnY, tstY = y[train_index], y[test_index]
         
         print('-> Fold '+str(i)+' for '+context+':')
-        best, best_tree, acc_crossval[i] = DT(trnX, tstX, trnY, tstY,criteria,max_depths,min_impurity_decrease,context)
-        drawDT(best_tree,'Best tree for '+context,save_pics)
-        DTPerformance(best_tree,trnX, tstX, trnY, tstY,labels)
+        best_par, best_tree, acc_crossval[i] = GB(trnX, tstX, trnY, tstY, losses, criterions, learn_rates, n_estimators, max_depths, max_features)
+        GBPerformance(best_tree, trnX, tstX, trnY, tstY, labels)
         if save_pics:
-            plt.savefig('plots/'+context+'_DT_CrossVal'+str(n_splits)+'_#'+str(i)+'_performance.png')
+            plt.savefig('plots/'+context+'_GB_CrossVal'+str(n_splits)+'_#'+str(i)+'_performance.png')
         plt.show()
         i+=1
     
