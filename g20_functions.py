@@ -109,8 +109,9 @@ def balanceData(data, dataset="Heart", save_pics=False):
     temp[target] = y
     output['SMOTE'] = temp
     
-    fig = plt.figure()
-    ds.multiple_bar_chart([target_count.index[ind_min_class], target_count.index[1-ind_min_class]], values, title='Target', xlabel='frequency', ylabel='Class balance')
+    plt.figure()
+    ds.multiple_bar_chart([target_count.index[ind_min_class], target_count.index[1-ind_min_class]], values,
+                          title='Target', xlabel='frequency', ylabel='Class balance')
     if save_pics:
         plt.savefig('plots/Target for '+dataset+' dataset.png')
     plt.show()
