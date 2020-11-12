@@ -28,7 +28,7 @@ def loadHeart():
 
 # loads up the toxic dataset
 def loadToxic():
-    return pd.read_csv('data/qsar_oral_toxicity.csv',header= None, sep =';')
+    return pd.read_csv('data/qsar_oral_toxicity.csv', header=None, sep =';')
 
 
 # split the data into x & y
