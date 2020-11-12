@@ -4,7 +4,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.ensemble import GradientBoostingClassifier
-# from xgboost import XGBClassifier
 import sklearn.metrics as metrics
 import ds_functions as ds
 
@@ -14,13 +13,12 @@ y: np.ndarray = data.pop('DEATH_EVENT').values
 X: np.ndarray = data.values
 labels = pd.unique(y)
 
-###### FOR TESTING
+##### FOR TESTING
 X = X[20:50]
 y = y[20:50]
 
-############################################
-############ MUDAR PARA CROSSVAL ###########
-# hold-out (train_test_split)
+##### MUDAR PARA CROSSVAL #####
+# hold-out (train_test_split) 
 trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y)
 
 # Gradient Boosting parameters
