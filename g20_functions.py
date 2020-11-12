@@ -37,21 +37,25 @@ def xySplit(data,target='DEATH_EVENT'):
     return x,y,labels
 
 
-# returns scaled data with two different methods
-def scaleHeart(data):
+# returns scaled data with two different methods (for heart only)
+def scaleData(data):
     # exclude death_event from scaling, or you'll get problems later
+    output = {'Original': pd.DataFrame().append(data)}
+    
     death_event = data.pop('DEATH_EVENT').values
     # print(data.describe(include='all'))
     transf = StandardScaler(with_mean=True, with_std=True, copy=True).fit(data)
     norm_data_zscore = pd.DataFrame(transf.transform(data), columns= data.columns)
     norm_data_zscore['DEATH_EVENT'] = death_event
+    output['Z-Score'] = pd.DataFrame().append(norm_data_zscore)
     # print(norm_data_zscore.describe(include='all'))
     
     transf = MinMaxScaler(feature_range=(0, 1), copy=True).fit(data)
     norm_data_minmax = pd.DataFrame(transf.transform(data), columns= data.columns)
     norm_data_minmax['DEATH_EVENT'] = death_event
+    output['MinMax'] = pd.DataFrame().append(norm_data_minmax)
     # print(norm_data_minmax.describe(include='all'))
-    return norm_data_zscore, norm_data_minmax
+    return output
 
 # returns base data, and data for the 3 balancing methods
 def balanceData(data,dataset = "Heart",save_pics=False):
