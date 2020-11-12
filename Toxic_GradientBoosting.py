@@ -4,7 +4,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.ensemble import GradientBoostingClassifier
-# from xgboost import XGBClassifier
 import sklearn.metrics as metrics
 import ds_functions as ds
 
