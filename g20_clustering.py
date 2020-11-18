@@ -3,24 +3,47 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import ds_functions as ds
-from sklearn.cluster import DBSCAN
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, GaussianMixture, DBSCAN, AgglomerativeClustering
 from sklearn.metrics import silhouette_score
-from sklearn.mixture import GaussianMixture
 from scipy.spatial.distance import pdist, squareform
-from sklearn.cluster import AgglomerativeClustering
 
 
-def k_means(data,dataset):
+def k_Means(data, dataset):
     return 1
 
-def em(data,dataset):
-    return 1
 
-def density(data,dataset):
+def EM(data, dataset):
+    N_CLUSTERS = [2, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]
     v1 = 0
     v2 = 4
-    
+    mse: list = []
+    sc: list = []
+
+    rows, cols = ds.choose_grid(len(N_CLUSTERS))
+    _, axs = plt.subplots(rows, cols, figsize=(cols*5, rows*5), squeeze=False)
+    i, j = 0, 0
+    for n in range(len(N_CLUSTERS)):
+        k = N_CLUSTERS[n]
+        estimator = GaussianMixture(n_components=k)
+        estimator.fit(data)
+        labels = estimator.predict(data)
+        mse.append(ds.compute_mse(data.values, labels, estimator.means_))
+        sc.append(silhouette_score(data, labels))
+
+        ds.plot_clusters(data, v2, v1, labels.astype(float), estimator.means_, k, f'EM k={k}', ax=axs[i,j])
+        i, j = (i + 1, 0) if (n+1) % cols == 0 else (i, j + 1)
+    plt.show()
+
+    fig, ax = plt.subplots(1, 2, figsize=(6, 3), squeeze=False)
+    ds.plot_line(N_CLUSTERS, mse, title='EM MSE', xlabel='k', ylabel='MSE', ax=ax[0, 0])
+    ds.plot_line(N_CLUSTERS, sc, title='EM SC', xlabel='k', ylabel='SC', ax=ax[0, 1], percentage=True)
+    plt.show()
+
+
+def density(data, dataset):
+    v1 = 0
+    v2 = 4
+
     N_CLUSTERS = [2, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]
     rows, cols = ds.choose_grid(len(N_CLUSTERS))
 
@@ -46,18 +69,18 @@ def density(data,dataset):
             mse.append(0)
             sc.append(0)
     plt.show()
-    
+
     fig, ax = plt.subplots(1, 2, figsize=(6, 3), squeeze=False)
     ds.plot_line(EPS, mse, title='DBSCAN MSE', xlabel='eps', ylabel='MSE', ax=ax[0, 0])
     ds.plot_line(EPS, sc, title='DBSCAN SC', xlabel='eps', ylabel='SC', ax=ax[0, 1], percentage=True)
     plt.show()
-    
+
     METRICS = ['euclidean', 'cityblock', 'chebyshev', 'cosine', 'jaccard']
     distances = []
     for m in METRICS:
         dist = np.mean(np.mean(squareform(pdist(data.values, metric=m))))
         distances.append(dist)
-    
+
     print('AVG distances among records', distances)
     #TODO ????????????????????????????????????????????????????????????????????????????????????????????????
     distances[0] *= 0.6
@@ -93,11 +116,12 @@ def density(data,dataset):
     ds.bar_chart(METRICS, sc, title='DBSCAN SC', xlabel='metric',
                  ylabel='SC', ax=ax[0, 1], percentage=True)
     plt.show()
-    
-def hierarchical(data,dataset):    
+
+
+def hierarchical(data, dataset):
     v1 = 0
     v2 = 4
-    
+
     N_CLUSTERS = [2, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]
     mse: list = []
     sc: list = []
@@ -116,15 +140,15 @@ def hierarchical(data,dataset):
                          f'Hierarchical k={k}', ax=axs[i,j])
         i, j = (i + 1, 0) if (n+1) % cols == 0 else (i, j + 1)
     plt.show()
-    
+
     fig, ax = plt.subplots(1, 2, figsize=(6, 3), squeeze=False)
     ds.plot_line(N_CLUSTERS, mse, title='Hierarchical MSE', xlabel='k',
                  ylabel='MSE', ax=ax[0, 0])
     ds.plot_line(N_CLUSTERS, sc, title='Hierarchical SC', xlabel='k',
                  ylabel='SC', ax=ax[0, 1], percentage=True)
     plt.show()
-    
-    
+
+
     METRICS = ['euclidean', 'cityblock', 'chebyshev', 'cosine', 'jaccard']
     LINKS = ['complete', 'average']
     k = 3
@@ -150,7 +174,7 @@ def hierarchical(data,dataset):
         values_mse[m] = mse
         values_sc[m] = sc
     plt.show()
-    
+
     _, ax = plt.subplots(1, 2, figsize=(6, 3), squeeze=False)
     ds.multiple_bar_chart(LINKS, values_mse, title=f'Hierarchical MSE', xlabel='metric',
                           ylabel='MSE', ax=ax[0, 0])
