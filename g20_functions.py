@@ -117,32 +117,28 @@ def balanceData(data, dataset="Heart", save_pics=False):
     plt.show()
     return output
 
+def outlierRemovalData(data, dataset="Heart"):
+    output = {'Original': pd.DataFrame().append(data)}
+    if dataset == "Heart":
+        target='DEATH_EVENT'
+    elif dataset == "Toxic":
+        target=1024
+    columns = data.columns.copy()
+    y = data.pop(target).values
+    X = data.values
+    for outlier_method in OUTLIER_METHODS:
+        for cont in [0.01, 0.05, 0.1]:
+            X_if, y_if = outlierRemoval(X,y,outlier_method,cont)
+            y_if = np.expand_dims(np.array(y_if),axis=1)
+            print(X_if.shape)
+            print(y_if.shape)
+            data_if = pd.DataFrame(data = np.concatenate((X_if,y_if), axis=1), columns = columns)
+            output[outlier_method+" "+str(cont)] = data_if
+    return output
 
 def dataShapeAndTypes(data):
     # Data records, variables and type
     print(data.shape); print(data.dtypes)
-
-
-def correlationHeart(data, title = 'Correlation analysis'):
-    register_matplotlib_converters()
-
-    # Data correlation
-    plt.figure(figsize=[12, 12])
-    corr_mtx = data.corr()
-    sns.heatmap(corr_mtx, xticklabels=corr_mtx.columns, yticklabels=corr_mtx.columns, annot=True, cmap='Blues')
-    plt.title(title)
-    plt.show()
-
-
-def correlationToxic(data):
-    c = data.corr().abs()
-    s = c.unstack()
-    return s.sort_values(kind="quicksort")
-
-
-def topCorr(so, thresholds = [0.99]):
-    return 1
-
 
 OUTLIER_METHODS = ["Isolation Forest", "Elliptic Envelope", "Local Outlier Factor"]
 def outlierRemoval(X,Y, method, cont):
