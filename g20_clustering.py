@@ -3,7 +3,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import ds_functions as ds
-from sklearn.cluster import KMeans, GaussianMixture, DBSCAN, AgglomerativeClustering
+from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering
+from sklearn.mixture import GaussianMixture
 from sklearn.metrics import silhouette_score
 from scipy.spatial.distance import pdist, squareform
 
