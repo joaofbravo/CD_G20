@@ -16,9 +16,49 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 register_matplotlib_converters()
 from imblearn.over_sampling import SMOTE
 from sklearn.feature_selection import chi2, f_classif, mutual_info_classif, SelectFpr, SelectFdr, SelectFwe, SelectKBest, SelectPercentile, VarianceThreshold
+from statistics import mean
 
+#receives lists of results and plots for avgs
+def plot_avg_evaluation_results(labels: np.ndarray, trn_y, prd_trn, tst_y, prd_tst):
+    Accuracy_test = []
+    Recall_test = []
+    Specificity_test = []
+    Precision_test = []
+    Accuracy_train = []
+    Recall_train = []
+    Specificity_train = []
+    Precision_train = []
+    TN_Test = []
+    FN_Test = []
+    TP_Test = []
+    FP_Test = []
+    for i in range(len(trn_y)):
+        cnf_mtx_trn = metrics.confusion_matrix(trn_y, prd_trn, labels)
+        tn_trn, fp_trn, fn_trn, tp_trn = cnf_mtx_trn.ravel()
+        cnf_mtx_tst = metrics.confusion_matrix(tst_y, prd_tst, labels)
+        tn_tst, fp_tst, fn_tst, tp_tst = cnf_mtx_tst.ravel()
+        Accuracy_test.append((tn_tst + tp_tst) / (tn_tst + tp_tst + fp_tst + fn_tst))
+        Recall_test.append(tp_tst / (tp_tst + fn_tst))
+        Specificity_test.append(tn_tst / (tn_tst + fp_tst))
+        Precision_test.append(tp_tst / (tp_tst + fp_tst))
+        Accuracy_train.append((tn_trn + tp_trn) / (tn_trn + tp_trn + fp_trn + fn_trn))
+        Recall_train.append(tp_trn / (tp_trn + fn_trn))
+        Specificity_train.append(tn_trn / (tn_trn + fp_trn))
+        Precision_train.append(tp_trn / (tp_trn + fp_trn))
+        TN_Test.append(tn_tst)
+        FN_Test.append(fn_tst)
+        TP_Test.append(tp_tst)
+        FP_Test.append(fp_tst)
+    evaluation = {'Accuracy': [mean(Accuracy_train),
+                               mean(Accuracy_test)],
+                  'Recall': [mean(Recall_train), mean(Recall_test)],
+                  'Specificity': [mean(Specificity_train), mean(Specificity_test)],
+                  'Precision': [mean(Precision_train), mean(Precision_test)]}
 
-
+    fig, axs = plt.subplots(1, 2, figsize=(2 * ds.HEIGHT, ds.HEIGHT))
+    ds.multiple_bar_chart(['Train', 'Test'], evaluation, ax=axs[0], title="Model's performance over Train and Test sets")
+    ds.plot_confusion_matrix(np.array([[mean(TP_Test), mean(FN_Test)],
+                                       [mean(FP_Test), mean(TN_Test)]]), labels, ax=axs[1])
 
 # loads up the heart dataset
 def loadHeart():
