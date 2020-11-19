@@ -15,7 +15,7 @@ def k_Means(data, dataset):
     v2 = 4
     mse: list = []
     sc: list = []
-   
+
     rows, cols = ds.choose_grid(len(N_CLUSTERS))
     _, axs = plt.subplots(rows, cols, figsize=(cols*5, rows*5), squeeze=False)
     i, j = 0, 0
@@ -25,11 +25,10 @@ def k_Means(data, dataset):
         estimator.fit(data)
         mse.append(estimator.inertia_)
         sc.append(silhouette_score(data, estimator.labels_))
-        ds.plot_clusters(data, v2, v1, estimator.labels_.astype(float), estimator.cluster_centers_, k,
-                     f'KMeans k={k}', ax=axs[i,j])
+        ds.plot_clusters(data, v2, v1, estimator.labels_.astype(float), estimator.cluster_centers_, k, f'KMeans k={k}', ax=axs[i,j])
         i, j = (i + 1, 0) if (n+1) % cols == 0 else (i, j + 1)
     plt.show()
-    
+
     fig, ax = plt.subplots(1, 2, figsize=(6, 3), squeeze=False)
     ds.plot_line(N_CLUSTERS, mse, title='KMeans MSE', xlabel='k', ylabel='MSE', ax=ax[0, 0])
     ds.plot_line(N_CLUSTERS, sc, title='KMeans SC', xlabel='k', ylabel='SC', ax=ax[0, 1], percentage=True)
@@ -86,8 +85,7 @@ def density(data, dataset):
             centers = ds.compute_centroids(data, labels)
             mse.append(ds.compute_mse(data.values, labels, centers))
             sc.append(silhouette_score(data, labels))
-            ds.plot_clusters(data, v2, v1, labels.astype(float), estimator.components_, k,
-                             f'DBSCAN eps={EPS[n]} k={k}', ax=axs[i,j])
+            ds.plot_clusters(data, v2, v1, labels.astype(float), estimator.components_, k, f'DBSCAN eps={EPS[n]} k={k}', ax=axs[i,j])
             i, j = (i + 1, 0) if (n+1) % cols == 0 else (i, j + 1)
         else:
             mse.append(0)
@@ -106,7 +104,7 @@ def density(data, dataset):
         distances.append(dist)
 
     print('AVG distances among records', distances)
-    #TODO ????????????????????????????????????????????????????????????????????????????????????????????????
+    # TODO ??????????????????????????????????????????????????????????????????
     distances[0] *= 0.6
     distances[1] = 80
     distances[2] *= 0.6
@@ -127,8 +125,7 @@ def density(data, dataset):
             centers = ds.compute_centroids(data, labels)
             mse.append(ds.compute_mse(data.values, labels, centers))
             sc.append(silhouette_score(data, labels))
-            ds.plot_clusters(data, v2, v1, labels.astype(float), estimator.components_, k,
-                             f'DBSCAN metric={METRICS[n]} eps={distances[n]:.2f} k={k}', ax=axs[i,j])
+            ds.plot_clusters(data, v2, v1, labels.astype(float), estimator.components_, k, f'DBSCAN metric={METRICS[n]} eps={distances[n]:.2f} k={k}', ax=axs[i,j])
         else:
             mse.append(0)
             sc.append(0)
@@ -187,7 +184,7 @@ def hierarchical(data, dataset):
         m = METRICS[i]
         for j in range(len(LINKS)):
             link = LINKS[j]
-            estimator = AgglomerativeClustering(n_clusters=k, linkage=link, affinity=m )
+            estimator = AgglomerativeClustering(n_clusters=k, linkage=link, affinity=m)
             estimator.fit(data)
             labels = estimator.labels_
             centers = ds.compute_centroids(data, labels)
