@@ -75,11 +75,10 @@ def GBPerformance(tree, trnX, tstX, trnY, tstY, labels):
 def holdoutGB(X, y, labels, context, save_pics=False, train_size=0.7,
               losses=['deviance', 'exponential'],  # exponential == AdaBoost
               criterion='friedman_mse',  # friedman_mse, mae
-              learn_rates=[0.01, 0.1, 0.5],
-              n_estimators=[10, 100, 200, 300],
+              learn_rates=[0.01, 0.1, 0.3, 0.5, 1],
+              n_estimators=[10, 50, 100, 200, 300],
               max_depths=[5, 10, 25],
-              max_features=[.25, 1]):
-
+              max_features=[.25, 0.5, 0.75, 1]):
     trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y)
     print('-> Holdout for '+context+':')
     best_par, best_tree, acc = GB(trnX, tstX, trnY, tstY, losses, criterion, learn_rates, n_estimators, max_depths, max_features)
@@ -92,11 +91,10 @@ def holdoutGB(X, y, labels, context, save_pics=False, train_size=0.7,
 def crossValGB(X, y, labels, context, save_pics=False, n_splits=5,
                losses=['deviance', 'exponential'],  # exponential == AdaBoost
                criterion='friedman_mse',  # friedman_mse, mae
-               learn_rates=[0.01, 0.1, 0.5],
-               n_estimators=[10, 100, 200, 300],
-               max_depths=[5, 10, 25],
-               max_features=[.25, 1]):
-
+                     learn_rates=[0.01, 0.1, 0.3, 0.5, 1],
+                     n_estimators=[10, 50, 100, 200, 300],
+                     max_depths=[5, 10, 25],
+                     max_features=[.25, 0.5, 0.75, 1]):
     skf = StratifiedKFold(n_splits, shuffle=True)
     acc_crossval = np.empty(n_splits, dtype=dict)
     print('\n-> '+str(n_splits)+'-fold CrossVal for '+context+':')
@@ -150,13 +148,12 @@ def overfit_plot(ytest_values, ytrain_values, f_best, row_var, row_str,
 
 
 def overfitting_hoGB(X, y, labels, context, save_pics=False, train_size=0.7,
-                     losses=['deviance'],  # exponential == AdaBoost
+                     losses=['deviance', 'exponential'],  # exponential == AdaBoost
                      criterion='friedman_mse',  # friedman_mse, mae
-                     learn_rates=[0.01, 0.1, 0.5],
-                     n_estimators=[10, 150, 300],
+                     learn_rates=[0.01, 0.1, 0.3, 0.5, 1],
+                     n_estimators=[10, 50, 100, 200, 300],
                      max_depths=[5, 10, 25],
-                     max_features=[.25]):
-
+                     max_features=[.25, 0.5, 0.75, 1]):
     trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y)
     print('-> Holdout for '+context+':')
     best_par, ytest_values, ytrain_values = GB(trnX, tstX, trnY, tstY, losses, criterion, learn_rates, n_estimators, max_depths, max_features, overfit=True)
@@ -175,7 +172,7 @@ def overfitting_hoGB(X, y, labels, context, save_pics=False, train_size=0.7,
     overfit_plot(ytest_values, ytrain_values, f_best,
                  row_var=losses, row_str='loss',
                  col_var=max_depths, col_str='max_depth',
-                 x_var=learn_rates, x_str='learn_rates',
+                 x_var=learn_rates, x_str='learning_rates',
                  legend_var=n_estimators, key_order=(1,2,4,3,5))
 
     # testing max_depth
@@ -187,13 +184,12 @@ def overfitting_hoGB(X, y, labels, context, save_pics=False, train_size=0.7,
 
 
 def overfitting_cvGB(X, y, labels, context, save_pics=False, n_splits=5,
-                     losses=['deviance'],  # exponential == AdaBoost
+                     losses=['deviance', 'exponential'],  # exponential == AdaBoost
                      criterion='friedman_mse',  # friedman_mse, mae
-                     learn_rates=[0.01, 0.1, 0.3, 0.5],
-                     n_estimators=[10, 100, 200, 300],
+                     learn_rates=[0.01, 0.1, 0.3, 0.5, 1],
+                     n_estimators=[10, 50, 100, 200, 300],
                      max_depths=[5, 10, 25],
-                     max_features=[.25, 0.5, 1]):
-
+                     max_features=[.25, 0.5, 0.75, 1]):
     skf = StratifiedKFold(n_splits, shuffle=True)
     ytest_values = np.empty(n_splits, dtype=dict)
     ytrain_values = np.empty(n_splits, dtype=dict)
@@ -234,7 +230,7 @@ def overfitting_cvGB(X, y, labels, context, save_pics=False, n_splits=5,
     overfit_plot(ytest_values, ytrain_values, f_best,
                  row_var=losses, row_str='loss',
                  col_var=max_depths, col_str='max_depth',
-                 x_var=learn_rates, x_str='learn_rates',
+                 x_var=learn_rates, x_str='learning_rates',
                  legend_var=n_estimators, key_order=(1,2,4,3,5))
 
     # testing max_depth
