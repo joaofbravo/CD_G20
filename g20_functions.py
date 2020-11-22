@@ -78,8 +78,8 @@ def loadToxic():
 # TODO returns list with 3 discretization types (quantile & kmeans don't seem to work)
 def dummify(data):
     nbins = [10, 2, 50, 2,
-              10, 2, 25,
-              50, 10, 2, 2]
+             10, 2, 25,
+             50, 10, 2, 2]
     features = ['age', 'anaemia', 'creatinine_phosphokinase', 'diabetes',
                 'ejection_fraction', 'high_blood_pressure', 'platelets',
                 'serum_creatinine', 'serum_sodium', 'sex', 'smoking']
