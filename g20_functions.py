@@ -77,7 +77,7 @@ def loadToxic():
 # discretizes dataset with a one-hot encoding (for heart only)
 # TODO returns list with 3 discretization types
 def dummify(data):
-    nbins = [10, 2, 50, 2,
+    nbins =  [10, 2, 50, 2,
              10, 2, 25,
              50, 10, 2, 2]
     features = ['age', 'anaemia', 'creatinine_phosphokinase', 'diabetes',
@@ -87,14 +87,15 @@ def dummify(data):
     data_new = [pd.DataFrame()] * len(strategies)
 
     for i, strategy in enumerate(strategies):
-        print(i, strategy)
         for f, n in zip(features, nbins):
             enc = KBinsDiscretizer(n_bins=n, encode='onehot-dense', strategy=strategy)
             dummies_array = enc.fit_transform(data[[f]])
+
+            # print(f, n, dummies_array)
             dummies_df = pd.DataFrame(dummies_array, columns=[f+'_'+str(j) for j in range(n)])
 
             data_new[i] = data_new[i].join(dummies_df, how='right')
-            print(data_new[i])
+            # print(data_new[i])
 
     return data_new
 
