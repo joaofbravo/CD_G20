@@ -83,7 +83,7 @@ def dummify(data):
     features = ['age', 'anaemia', 'creatinine_phosphokinase', 'diabetes',
                 'ejection_fraction', 'high_blood_pressure', 'platelets',
                 'serum_creatinine', 'serum_sodium', 'sex', 'smoking']
-    strategies = ['quantile'] #, 'quantile', 'kmeans']
+    strategies = ['uniform'] #, 'quantile', 'kmeans']
     data_new = [pd.DataFrame()] * len(strategies)
 
     for i, strategy in enumerate(strategies):
