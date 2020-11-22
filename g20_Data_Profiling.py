@@ -7,6 +7,7 @@ import seaborn as sns
 import scipy.stats as _stats
 import numpy as np
 
+
 def compute_known_distributions(x_values: list) -> dict:
     distributions = dict()
     # Gaussian
@@ -20,29 +21,31 @@ def compute_known_distributions(x_values: list) -> dict:
     distributions['LogNor(%.1f,%.2f)'%(np.log(scale),sigma)] = _stats.lognorm.pdf(x_values, sigma, loc, scale)
     return distributions
 
+
 def histogram_with_distributions(ax: plt.Axes, series: pd.Series, var: str):
     values = series.sort_values().values
     ax.hist(values, 20, density=True)
     distributions = compute_known_distributions(values)
     ds.multiple_line_chart(values, distributions, ax=ax, title='Best fit for %s'%var, xlabel=var, ylabel='')
 
+
 def data_dimensionality(data, dataset):
     print(data.shape)
     print()
-    
+
     plt.figure(figsize=(4,2))
     values = {'nr records': data.shape[0], 'nr variables': data.shape[1]}
     ds.bar_chart(values.keys(), values.values(), title='Nr of records vs nr variables')
-    
+
     print(data.dtypes)
     print()
-    
+
     if dataset == "Toxic":
         cat_vars = data.select_dtypes(include='object')
         data[cat_vars.columns] = data.select_dtypes(['object']).apply(lambda x: x.astype('category'))
         print(data.dtypes)
         print()
-    
+
     plt.figure()
     mv = {}
     for var in data:
@@ -51,16 +54,17 @@ def data_dimensionality(data, dataset):
                    xlabel='variables',
                    ylabel='nr missing values')
     plt.xticks(rotation=90)
-    
+
+
 def data_granularity(data, dataset):
     print(data.describe(), '\n')
     print(data.columns)
     print()
     values = {'nr records': data.shape[0], 'nr variables': data.shape[1]}
-    numeric_vars = data.select_dtypes(include='number').columns
+    # numeric_vars
     variables = data.select_dtypes(include='number').columns
     i, j = 0, 0
-    if dataset == "Heart":
+    if dataset == "Heart":s
         bins = (2, 10, 25, 50, 100, 299)
         rows = len(variables)
         cols = len(bins)
@@ -75,7 +79,7 @@ def data_granularity(data, dataset):
         rows = 32
         cols = 32
         fig, axs = plt.subplots(rows, cols, figsize=(cols*ds.HEIGHT, rows*ds.HEIGHT))
-        
+
         for n in range(len(variables)):
             axs[i, j].set_title('Histogram for %s'%variables[n])
             axs[i, j].set_xlabel(variables[n])
@@ -83,20 +87,21 @@ def data_granularity(data, dataset):
             axs[i, j].hist(data[variables[n]].values, bins=2)
             i, j = (i + 1, 0) if (n+1) % cols == 0 else (i, j + 1)
     plt.show()
-    
+
+
 def data_distribution(data, dataset):
     register_matplotlib_converters()
-    
+
     values = {'nr records': data.shape[0], 'nr variables': data.shape[1]}
 
     print(data.describe())
-    
+
     numeric_vars = data.select_dtypes(include='number').columns
     if dataset == "Heart":
         rows, cols = ds.choose_grid(len(numeric_vars))
     elif dataset == "Toxic":
         rows, cols = 32,32
-    
+
     fig, axs = plt.subplots(rows, cols, figsize=(cols*ds.HEIGHT, rows*ds.HEIGHT))
     i, j = 0, 0
     for n in range(len(numeric_vars)):
@@ -104,7 +109,7 @@ def data_distribution(data, dataset):
         axs[i, j].boxplot(data[numeric_vars[n]].dropna().values)
         i, j = (i + 1, 0) if (n+1) % cols == 0 else (i, j + 1)
     plt.show()
-    
+
     fig, axs = plt.subplots(rows, cols, figsize=(cols*ds.HEIGHT, rows*ds.HEIGHT))
     i, j = 0, 0
     for n in range(len(numeric_vars)):
@@ -114,7 +119,7 @@ def data_distribution(data, dataset):
         axs[i, j].hist(data[numeric_vars[n]].dropna().values, 'auto')
         i, j = (i + 1, 0) if (n+1) % cols == 0 else (i, j + 1)
     plt.show()
-    
+
     fig, axs = plt.subplots(rows, cols, figsize=(cols*ds.HEIGHT, rows*ds.HEIGHT))
     i, j = 0, 0
     for n in range(len(numeric_vars)):
@@ -122,7 +127,7 @@ def data_distribution(data, dataset):
         sns.distplot(data[numeric_vars[n]].dropna().values, norm_hist=True, ax=axs[i, j], axlabel=numeric_vars[n])
         i, j = (i + 1, 0) if (n+1) % cols == 0 else (i, j + 1)
     plt.show()
-    
+
     fig, axs = plt.subplots(rows, cols, figsize=(cols*ds.HEIGHT, rows*ds.HEIGHT))
     i, j = 0, 0
     for n in range(len(numeric_vars)):
@@ -130,13 +135,14 @@ def data_distribution(data, dataset):
         i, j = (i + 1, 0) if (n+1) % cols == 0 else (i, j + 1)
     plt.show()
 
+
 def data_sparsity(data, dataset):
     register_matplotlib_converters()
-    
+
     values = {'nr records': data.shape[0], 'nr variables': data.shape[1]}
-    
+
     columns = data.select_dtypes(include='number').columns
-    
+
     if dataset == "Heart":
         rows, cols = len(columns)-1, len(columns)-1
         plt.figure()
@@ -153,9 +159,9 @@ def data_sparsity(data, dataset):
     elif dataset == "Toxic":
         size = len(columns) #full size
         panel_size = int(size/(2**5)) #size within each panel
-        
+
         rows = cols = panel_size
-        
+
         for k in range(0,size,panel_size):
             for m in range(k,size,panel_size):
                 plt.figure()
@@ -174,31 +180,31 @@ def data_sparsity(data, dataset):
                         axs[i, j].scatter(data[var1], data[var2])
                 plt.show()
 
+
 def data_correlation(data, dataset):
     register_matplotlib_converters()
-   
+
     if dataset == "Heart":
         fig = plt.figure(figsize=[12, 12])
         corr_mtx = data.corr()
         sns.heatmap(corr_mtx, xticklabels=corr_mtx.columns, yticklabels=corr_mtx.columns, annot=True, cmap='Blues')
         plt.title('Correlation analysis')
         plt.show()
-    
+
     elif dataset == "Toxic":
         #Change last variable from non-numeric to symbolic
         cat_vars = data.select_dtypes(include='object')
         data[cat_vars.columns] = data.select_dtypes(['object']).apply(lambda x: x.astype('category'))
-    
+
         c = data.corr().abs()
-        
+
         s = c.unstack()
         so = s.sort_values(kind="quicksort")
-        
-        #pd.set_option('display.max_rows', None)
+
+        # pd.set_option('display.max_rows', None)
         print(so[-1400:-1025])
 
 
-
-
+# TODO
 def topCorr(so, thresholds = [0.99]):
     return 1
