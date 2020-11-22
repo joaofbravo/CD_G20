@@ -77,9 +77,9 @@ def loadToxic():
 # discretizes dataset with a one-hot encoding (for heart only)
 # TODO returns list with 3 discretization types
 def dummify(data):
-    nbins =  [10, 2, 50, 2,
-             10, 2, 25,
-             50, 10, 2, 2]
+    nbins =  [9, 1, 49, 1,
+             9, 1, 24,
+             49, 9, 1, 1]
     features = ['age', 'anaemia', 'creatinine_phosphokinase', 'diabetes',
                 'ejection_fraction', 'high_blood_pressure', 'platelets',
                 'serum_creatinine', 'serum_sodium', 'sex', 'smoking']
