@@ -83,7 +83,7 @@ def dummify(data):
     features = ['age', 'anaemia', 'creatinine_phosphokinase', 'diabetes',
                 'ejection_fraction', 'high_blood_pressure', 'platelets',
                 'serum_creatinine', 'serum_sodium', 'sex', 'smoking']
-    strategies = ['uniform'] #, 'quantile', 'kmeans']
+    strategies = ['quantile'] #, 'quantile', 'kmeans']
     data_new = [pd.DataFrame()] * len(strategies)
 
     for i, strategy in enumerate(strategies):
@@ -92,7 +92,8 @@ def dummify(data):
             dummies_array = enc.fit_transform(data[[f]])
 
             # print(f, n, dummies_array)
-            dummies_df = pd.DataFrame(dummies_array, columns=[f+'_'+str(j) for j in range(n)])
+            dummies_df = pd.DataFrame(dummies_array,
+                                      columns=[f+'_'+str(j) for j in range(n)])
 
             data_new[i] = data_new[i].join(dummies_df, how='right')
             # print(data_new[i])
