@@ -1,16 +1,16 @@
 import itertools
 import math
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import matplotlib.cm as cm
 import warnings
 import sklearn.metrics as metrics
 import config as cfg
 import datetime as dt
 import matplotlib.colors as colors
-
+from sklearn.preprocessing import OneHotEncoder
 
 COLORS = colors.CSS4_COLORS
 
@@ -157,16 +157,19 @@ def plot_roc_chart(models: dict, tstX: np.ndarray, tstY: np.ndarray, ax: plt.Axe
     ax.legend(loc="lower right")
 
 
+
 def plot_clusters(data, var1st, var2nd, clusters, centers, n_clusters: int, title: str,  ax: plt.Axes = None):
     if ax is None:
         ax = plt.gca()
-    ax.scatter(data.iloc[:, var1st], data.iloc[:, var2nd], c=clusters, alpha=0.5)
-    for k, col in zip(range(n_clusters), COLORS):
+    colors = cm.rainbow(np.linspace(0, 1, n_clusters))
+    cluster_colors = list(zip(range(n_clusters), colors))
+    ax.scatter(data.iloc[:, var1st], data.iloc[:, var2nd], c=[cluster_colors[cl][1] for cl in clusters.astype(int)], alpha=0.5)
+    for k, col in cluster_colors:
         cluster_center = centers[k]
-        ax.plot(cluster_center[0], cluster_center[1], 'o', markerfacecolor=col, markeredgecolor='k', markersize=6)
+        ax.plot(cluster_center[var1st], cluster_center[var2nd], 'o', markerfacecolor=col, markeredgecolor='k', markersize=6)
     ax.set_title(title)
-    ax.set_xlabel('var' + str(var1st))
-    ax.set_ylabel('var' + str(var2nd))
+    ax.set_xlabel(data.columns[var1st])
+    ax.set_ylabel(data.columns[var2nd])
 
 
 def compute_centroids(data: pd.DataFrame, labels: np.ndarray) -> list:
@@ -195,3 +198,13 @@ def compute_mse(X: np.ndarray, labels: np.ndarray, centroids: np.ndarray) -> flo
     partial = [sum(el) for el in partial]
     partial = sum(partial)
     return math.sqrt(partial) / (n-1)
+
+def dummify(data: pd.DataFrame, cols_to_dummify: list):
+    one_hot_encoder = OneHotEncoder(sparse=False)
+    for var in cols_to_dummify:
+        one_hot_encoder.fit(data[var].values.reshape(-1, 1))
+        feature_names = one_hot_encoder.get_feature_names([var])
+        transformed_data = one_hot_encoder.transform(data[var].values.reshape(-1, 1))
+        data = pd.concat((data, pd.DataFrame(transformed_data, columns=feature_names)), 1)
+        data.pop(var)
+    return data
