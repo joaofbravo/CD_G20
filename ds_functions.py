@@ -10,7 +10,7 @@ import sklearn.metrics as metrics
 import config as cfg
 import datetime as dt
 import matplotlib.colors as colors
-
+from sklearn.preprocessing import OneHotEncoder
 
 COLORS = colors.CSS4_COLORS
 
@@ -198,3 +198,13 @@ def compute_mse(X: np.ndarray, labels: np.ndarray, centroids: np.ndarray) -> flo
     partial = [sum(el) for el in partial]
     partial = sum(partial)
     return math.sqrt(partial) / (n-1)
+
+def dummify(data: pd.DataFrame, cols_to_dummify: list):
+    one_hot_encoder = OneHotEncoder(sparse=False)
+    for var in cols_to_dummify:
+        one_hot_encoder.fit(data[var].values.reshape(-1, 1))
+        feature_names = one_hot_encoder.get_feature_names([var])
+        transformed_data = one_hot_encoder.transform(data[var].values.reshape(-1, 1))
+        data = pd.concat((data, pd.DataFrame(transformed_data, columns=feature_names)), 1)
+        data.pop(var)
+    return data
