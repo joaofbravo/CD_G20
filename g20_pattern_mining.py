@@ -4,12 +4,13 @@ import matplotlib.pyplot as plt
 import ds_functions as ds
 import mlxtend.frequent_patterns as pm
 
-def patterns(data):
-    MIN_SUP: float = 0.001
-    var_min_sup =[0.2, 0.1] + [i*MIN_SUP for i  in range(100, 0, -10)]
-    
-    patterns: pd.DataFrame = pm.apriori(data, min_support=MIN_SUP, use_colnames=True, verbose=True)
+
+def get_patterns(data,min_sup = 0.001):
+    patterns: pd.DataFrame = pm.apriori(data, min_support=min_sup, use_colnames=True, verbose=True)
     print(len(patterns),'patterns')
+    return patterns
+
+def plot_patterns(patterns,var_min_sup):
     nr_patterns = []
     for sup in var_min_sup:
         pat = patterns[patterns['support']>=sup]
@@ -18,10 +19,9 @@ def patterns(data):
     plt.figure(figsize=(6, 4))
     ds.plot_line(var_min_sup, nr_patterns, title='Nr Patterns x Support', xlabel='support', ylabel='Nr Patterns')
     plt.show()
-    return patterns
     
-def get_rules(patterns, MIN_CONF: float = 0.1):
-    rules = pm.association_rules(patterns, metric='confidence', min_threshold=MIN_CONF*5, support_only=False)
+def get_rules(patterns, min_conf):
+    rules = pm.association_rules(patterns, metric='confidence', min_threshold=min_conf*5, support_only=False)
     print(f'\tfound {len(rules)} rules')
     return rules
 
