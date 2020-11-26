@@ -48,7 +48,7 @@ def RFPerformance(tree,trnX, tstX, trnY, tstY,labels):
 def holdoutRF(X,y,labels,context,save_pics=False, train_size=0.7,
               n_estimators = [5, 10, 25, 50, 75, 100, 150, 200, 250, 300], max_depths = [5, 10, 25],
               max_features = [.1, .3, .5, .7, .9, 1],criteria = ['entropy', 'gini']):
-    trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y)
+    trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y, random_state=42)
     print('-> Holdout for '+context+':')
     best, best_tree, acc = RF(trnX, tstX, trnY, tstY,criteria,max_depths,n_estimators,max_features,context)
     RFPerformance(best_tree,trnX, tstX, trnY, tstY,labels)

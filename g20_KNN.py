@@ -48,7 +48,7 @@ def KNNPerformance(X_train, X_test, y_train, y_test, best, labels):
 def holdoutKNN(X, y, labels, context, save_pics=False, train_size=0.7,
                nvalues=[1, 3, 5, 7, 9, 11, 13, 15, 17, 19],
                dist=['manhattan', 'euclidean', 'chebyshev']):
-    trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=train_size, stratify=y)
+    trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=train_size, stratify=y, random_state=42)
     print('-> Holdout for '+context+':')
     best, _, test_values, _ = KNNModel(trnX, tstX, trnY, tstY, nvalues, dist)
 

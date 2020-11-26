@@ -59,7 +59,7 @@ def DTPerformance(tree,trnX, tstX, trnY, tstY,labels):
 def holdoutDT(X,y,labels,context,save_pics=False, train_size=0.7,
               min_impurity_decrease = [0.025, 0.01, 0.005, 0.0025, 0.001],
               max_depths = [2, 5, 10, 15, 20, 25],criteria = ['entropy', 'gini']):
-    trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y)
+    trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y, random_state=42)
     print('-> Holdout for '+context+':')
     best, best_tree, acc = DT(trnX, tstX, trnY, tstY,criteria,max_depths,min_impurity_decrease,context)
     drawDT(best_tree,'Best tree for '+context,save_pics)

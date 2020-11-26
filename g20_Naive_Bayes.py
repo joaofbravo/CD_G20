@@ -42,7 +42,7 @@ def NaiveBayesEstimation(X_train, X_test, y_train, y_test, context):
 
 # hold-out (train_test_split)
 def holdoutNaiveBayes(X,y,labels,context,save_pics=False, train_size=0.7):
-    trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y)
+    trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y, random_state=42)
     print('-> Holdout for '+context+':')
     NaiveBayesModel(trnX, tstX, trnY, tstY)
     if save_pics:

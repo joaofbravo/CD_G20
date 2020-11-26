@@ -79,7 +79,7 @@ def holdoutGB(X, y, labels, context, save_pics=False, train_size=0.7,
               n_estimators=[10, 50, 100, 200, 300],
               max_depths=[5, 10, 25],
               max_features=[.25, 0.5, 0.75, 1]):
-    trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y)
+    trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y, random_state=42)
     print('-> Holdout for '+context+':')
     best_par, best_tree, acc = GB(trnX, tstX, trnY, tstY, losses, criterion, learn_rates, n_estimators, max_depths, max_features)
     GBPerformance(best_tree, trnX, tstX, trnY, tstY,labels)
