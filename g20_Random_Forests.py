@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split,StratifiedKFold
 import sklearn.metrics as metrics
 from sklearn.ensemble import RandomForestClassifier
 import ds_functions as ds
+import g20_functions as g20
 
 def RF(trnX, tstX, trnY, tstY,criteria,max_depths,n_estimators,max_features,context):
     best = ('', 0, 0)
@@ -42,7 +43,8 @@ def RF(trnX, tstX, trnY, tstY,criteria,max_depths,n_estimators,max_features,cont
 def RFPerformance(tree,trnX, tstX, trnY, tstY,labels):
     prd_trn = tree.predict(trnX)
     prd_tst = tree.predict(tstX)
-    ds.plot_evaluation_results(labels, trnY, prd_trn, tstY, prd_tst)
+    return prd_trn, prd_tst
+    
     
 
 def holdoutRF(X,y,labels,context,save_pics=False, train_size=0.7,
@@ -51,7 +53,8 @@ def holdoutRF(X,y,labels,context,save_pics=False, train_size=0.7,
     trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y, random_state=42)
     print('-> Holdout for '+context+':')
     best, best_tree, acc = RF(trnX, tstX, trnY, tstY,criteria,max_depths,n_estimators,max_features,context)
-    RFPerformance(best_tree,trnX, tstX, trnY, tstY,labels)
+    prd_trn, prd_tst = RFPerformance(best_tree,trnX, tstX, trnY, tstY,labels)
+    ds.plot_evaluation_results(labels, trnY, prd_trn, tstY, prd_tst)
     if save_pics:
         plt.savefig('plots/'+context+'_RF_Holdout_performance.png')
     plt.show()
@@ -59,21 +62,35 @@ def holdoutRF(X,y,labels,context,save_pics=False, train_size=0.7,
 def crossValRF(X,y,labels,context,save_pics=False, n_splits = 5,
               n_estimators = [5, 10, 25, 50, 75, 100, 150, 200, 250, 300], max_depths = [5, 10, 25],
               max_features = [.1, .3, .5, .7, .9, 1],criteria = ['entropy', 'gini']):
-    skf = StratifiedKFold(n_splits, shuffle=True)
+    skf = StratifiedKFold(n_splits, shuffle=True, random_state=42)
     acc_crossval = np.empty(n_splits, dtype=dict)
     print('\n-> '+str(n_splits)+'-fold CrossVal for '+context+':')
     i = 0
+    y_train_list = []
+    prd_trn_list = []
+    y_test_list  = []
+    prd_tst_list = []
     for train_index, test_index in skf.split(X, y):
         trnX, tstX = X[train_index], X[test_index]
         trnY, tstY = y[train_index], y[test_index]
         
         print('-> Fold '+str(i)+' for '+context+':')
         best, best_tree, acc_crossval[i] = RF(trnX, tstX, trnY, tstY,criteria,max_depths,n_estimators,max_features,context)
-        RFPerformance(best_tree,trnX, tstX, trnY, tstY,labels)
-        if save_pics:
-            plt.savefig('plots/'+context+'_RF_CrossVal'+str(n_splits)+'_#'+str(i)+'_performance.png')
-        plt.show()
+        prd_trn, prd_tst = RFPerformance(best_tree,trnX, tstX, trnY, tstY,labels)
+        # ds.plot_evaluation_results(labels, trnY, prd_trn, tstY, prd_tst)
+        # if save_pics:
+        #     plt.savefig('plots/'+context+'_RF_CrossVal'+str(n_splits)+'_#'+str(i)+'_performance.png')
+        # plt.show()
+        y_train_list.append(trnY)
+        prd_trn_list.append(prd_trn)
+        y_test_list.append(tstY)
+        prd_tst_list.append(prd_tst)
         i+=1
+        
+    g20.plot_avg_evaluation_results(labels, y_train_list, prd_trn_list, y_test_list, prd_tst_list)
+    if save_pics:
+        plt.savefig('plots/'+context+'_RF_CrossVal'+str(n_splits)+'_average_performance.png')
+    plt.show()
     
     print('\n-> Average for '+str(n_splits)+'-fold CrossVal for '+context+':')
     acc_mean = np.mean(acc_crossval)

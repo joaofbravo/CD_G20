@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split, StratifiedKFold
 import sklearn.metrics as metrics
 from sklearn.neighbors import KNeighborsClassifier
 import ds_functions as ds
+import g20_functions as g20
 
 
 def KNNModel(X_train, X_test, y_train, y_test, nvalues, dist):
@@ -71,11 +72,15 @@ def crossValKNN(X, y, labels, context, save_pics=False, n_splits=5,
                 nvalues=[1, 3, 5, 7, 9, 11, 13, 15, 17, 19],
                 dist=['manhattan', 'euclidean', 'chebyshev']):
 
-    skf = StratifiedKFold(n_splits, shuffle=True)
+    skf = StratifiedKFold(n_splits, shuffle=True, random_state=42)
 
     print('\n-> '+str(n_splits)+'-fold CrossVal for '+context+':')
     acc_crossval = np.empty(n_splits, dtype=dict)
     i = 0
+    y_train_list = []
+    prd_trn_list = []
+    y_test_list  = []
+    prd_tst_list = []
     for train_index, test_index in skf.split(X, y):
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
@@ -83,18 +88,27 @@ def crossValKNN(X, y, labels, context, save_pics=False, n_splits=5,
         best, _, acc_crossval[i], _ = KNNModel(X_train, X_test, y_train, y_test, nvalues, dist)
 
         title = 'KNN variants for fold '+str(i)+', '+context
-        plt.figure()
-        ds.multiple_line_chart(nvalues, acc_crossval[i], title=title, xlabel='n', ylabel='accuracy', percentage=True)
-        if save_pics:
-            plt.savefig('plots/'+context+'_KNN_CrossVal'+str(n_splits)+'_#'+str(i)+'.png')
-        plt.show()
+        # plt.figure()
+        # ds.multiple_line_chart(nvalues, acc_crossval[i], title=title, xlabel='n', ylabel='accuracy', percentage=True)
+        # if save_pics:
+        #     plt.savefig('plots/'+context+'_KNN_CrossVal'+str(n_splits)+'_#'+str(i)+'.png')
+        # plt.show()
         prd_trn, prd_tst = KNNPerformance(X_train, X_test, y_train, y_test, best, labels)
-        ds.plot_evaluation_results(labels, y_train, prd_trn, y_test, prd_tst)
-        if save_pics:
-            plt.savefig('plots/'+context+'_KNN_CrossVal'+str(n_splits)+'_#'+str(i)+'_performance.png')
-        plt.show()
+        y_train_list.append(y_train)
+        prd_trn_list.append(prd_trn)
+        y_test_list.append(y_test)
+        prd_tst_list.append(prd_tst)
+        
+        # ds.plot_evaluation_results(labels, y_train, prd_trn, y_test, prd_tst)
+        # if save_pics:
+        #     plt.savefig('plots/'+context+'_KNN_CrossVal'+str(n_splits)+'_#'+str(i)+'_performance.png')
+        # plt.show()
         i += 1
-
+    
+    g20.plot_avg_evaluation_results(labels, y_train_list, prd_trn_list, y_test_list, prd_tst_list)
+    if save_pics:
+        plt.savefig('plots/'+context+'_KNN_CrossVal'+str(n_splits)+'_average_performance.png')
+    plt.show()
     # CrossVal: find mean accuracies
     acc_mean = {d: [] for d in dist}
     for i, d in enumerate(dist):

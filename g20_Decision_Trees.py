@@ -8,7 +8,7 @@ from sklearn.tree import DecisionTreeClassifier
 import ds_functions as ds
 from sklearn.tree import export_graphviz
 import pydot
-
+import g20_functions as g20
 
 def DT(trnX, tstX, trnY, tstY,criteria,max_depths,min_impurity_decrease,context):
     best = ('',  0, 0.0)
@@ -54,7 +54,7 @@ def drawDT(tree,name,save_pics):
 def DTPerformance(tree,trnX, tstX, trnY, tstY,labels):
     prd_trn = tree.predict(trnX)
     prd_tst = tree.predict(tstX)
-    ds.plot_evaluation_results(labels, trnY, prd_trn, tstY, prd_tst)
+    return prd_trn, prd_tst
 
 def holdoutDT(X,y,labels,context,save_pics=False, train_size=0.7,
               min_impurity_decrease = [0.025, 0.01, 0.005, 0.0025, 0.001],
@@ -63,7 +63,8 @@ def holdoutDT(X,y,labels,context,save_pics=False, train_size=0.7,
     print('-> Holdout for '+context+':')
     best, best_tree, acc = DT(trnX, tstX, trnY, tstY,criteria,max_depths,min_impurity_decrease,context)
     drawDT(best_tree,'Best tree for '+context,save_pics)
-    DTPerformance(best_tree,trnX, tstX, trnY, tstY,labels)
+    prd_trn, prd_tst = DTPerformance(best_tree,trnX, tstX, trnY, tstY,labels)
+    ds.plot_evaluation_results(labels, trnY, prd_trn, tstY, prd_tst)
     if save_pics:
         plt.savefig('plots/'+context+'_DT_Holdout_performance.png')
     plt.show()
@@ -71,10 +72,14 @@ def holdoutDT(X,y,labels,context,save_pics=False, train_size=0.7,
 def crossValDT(X,y,labels,context,save_pics=False, n_splits = 5,
               min_impurity_decrease = [0.025, 0.01, 0.005, 0.0025, 0.001],
               max_depths = [2, 5, 10, 15, 20, 25],criteria = ['entropy', 'gini']):
-    skf = StratifiedKFold(n_splits, shuffle=True)
+    skf = StratifiedKFold(n_splits, shuffle=True, random_state=42)
     acc_crossval = np.empty(n_splits, dtype=dict)
     print('\n-> '+str(n_splits)+'-fold CrossVal for '+context+':')
     i = 0
+    y_train_list = []
+    prd_trn_list = []
+    y_test_list  = []
+    prd_tst_list = []
     for train_index, test_index in skf.split(X, y):
         trnX, tstX = X[train_index], X[test_index]
         trnY, tstY = y[train_index], y[test_index]
@@ -82,11 +87,21 @@ def crossValDT(X,y,labels,context,save_pics=False, n_splits = 5,
         print('-> Fold '+str(i)+' for '+context+':')
         best, best_tree, acc_crossval[i] = DT(trnX, tstX, trnY, tstY,criteria,max_depths,min_impurity_decrease,context)
         drawDT(best_tree,'Best tree for '+context,save_pics)
-        DTPerformance(best_tree,trnX, tstX, trnY, tstY,labels)
-        if save_pics:
-            plt.savefig('plots/'+context+'_DT_CrossVal'+str(n_splits)+'_#'+str(i)+'_performance.png')
-        plt.show()
+        prd_trn, prd_tst = DTPerformance(best_tree,trnX, tstX, trnY, tstY,labels)
+        y_train_list.append(trnY)
+        prd_trn_list.append(prd_trn)
+        y_test_list.append(tstY)
+        prd_tst_list.append(prd_tst)
+        # ds.plot_evaluation_results(labels, trnY, prd_trn, tstY, prd_tst)
+        # if save_pics:
+        #     plt.savefig('plots/'+context+'_DT_CrossVal'+str(n_splits)+'_#'+str(i)+'_performance.png')
+        # plt.show()
         i+=1
+    
+    g20.plot_avg_evaluation_results(labels, y_train_list, prd_trn_list, y_test_list, prd_tst_list)
+    if save_pics:
+        plt.savefig('plots/'+context+'_DT_CrossVal'+str(n_splits)+'_average_performance.png')
+    plt.show()
     
     print('\n-> Average for '+str(n_splits)+'-fold CrossVal for '+context+':')
     acc_mean = np.mean(acc_crossval)

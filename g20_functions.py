@@ -18,7 +18,7 @@ register_matplotlib_converters()
 
 
 # receives lists of results and plots for avgs
-def plot_avg_evaluation_results(labels: np.ndarray, trn_y, prd_trn, tst_y, prd_tst):
+def plot_avg_evaluation_results(labels: np.ndarray, train_y, prd_train, test_y, prd_test):
     Accuracy_test = []
     Recall_test = []
     Specificity_test = []
@@ -31,7 +31,11 @@ def plot_avg_evaluation_results(labels: np.ndarray, trn_y, prd_trn, tst_y, prd_t
     FN_Test = []
     TP_Test = []
     FP_Test = []
-    for i in range(len(trn_y)):
+    for i in range(len(train_y)):
+        trn_y = train_y[i]
+        prd_trn = prd_train[i]
+        tst_y = test_y[i]
+        prd_tst = prd_test[i]
         cnf_mtx_trn = metrics.confusion_matrix(trn_y, prd_trn, labels)
         tn_trn, fp_trn, fn_trn, tp_trn = cnf_mtx_trn.ravel()
         cnf_mtx_tst = metrics.confusion_matrix(tst_y, prd_tst, labels)
