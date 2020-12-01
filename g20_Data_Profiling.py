@@ -64,7 +64,7 @@ def data_granularity(data, dataset):
     # numeric_vars
     variables = data.select_dtypes(include='number').columns
     i, j = 0, 0
-    if dataset == "Heart":s
+    if dataset == "Heart":
         bins = (2, 10, 25, 50, 100, 299)
         rows = len(variables)
         cols = len(bins)
@@ -202,7 +202,8 @@ def data_correlation(data, dataset):
         so = s.sort_values(kind="quicksort")
 
         # pd.set_option('display.max_rows', None)
-        print(so[-1400:-1025])
+        for i in range(-1025,-1225,-2):
+            print(so[i:i+1])
 
 
 # TODO
