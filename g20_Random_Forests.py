@@ -24,7 +24,7 @@ def RF(trnX, tstX, trnY, tstY,criteria,max_depths,n_estimators,max_features,cont
             for f in max_features:
                 yvalues = []
                 for n in n_estimators:
-                    rf = RandomForestClassifier(n_estimators=n, max_depth=d, max_features=f,criterion=c)
+                    rf = RandomForestClassifier(n_estimators=n, max_depth=d, max_features=f,criterion=c, random_state=42)
                     rf.fit(trnX, trnY)
                     prdY = rf.predict(tstX)
                     yvalues.append(metrics.accuracy_score(tstY, prdY))

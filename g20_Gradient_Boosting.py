@@ -21,7 +21,8 @@ def GB(trnX, tstX, trnY, tstY, losses, criterion, learn_rates, n_estimators, max
             for lr in learn_rates:
                 for n in n_estimators:
                     for f in max_features:
-                        clf = GradientBoostingClassifier(loss=l, criterion=criterion, learning_rate=lr, n_estimators=n, max_depth=d, max_features=f)
+                        clf = GradientBoostingClassifier(loss=l, criterion=criterion, learning_rate=lr,
+                                                         n_estimators=n, max_depth=d, max_features=f, random_state=42)
                         clf.fit(trnX, trnY)
                         # prdY = clf.predict(tstX)
                         prdY_tst = clf.predict(tstX)

@@ -22,7 +22,7 @@ def DT(trnX, tstX, trnY, tstY,criteria,max_depths,min_impurity_decrease,context)
         for d in max_depths:
             yvalues = []
             for imp in min_impurity_decrease:
-                tree = DecisionTreeClassifier(min_samples_leaf=1, max_depth=d, criterion=f, min_impurity_decrease=imp)
+                tree = DecisionTreeClassifier(min_samples_leaf=1, max_depth=d, criterion=f, min_impurity_decrease=imp, random_state=42)
                 tree.fit(trnX, trnY)
                 prdY = tree.predict(tstX)
                 yvalues.append(metrics.accuracy_score(tstY, prdY))
