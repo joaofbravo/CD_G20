@@ -72,6 +72,15 @@ def loadHeart():
     data.pop('time')
     return data
 
+# load heart with the generated feature
+def loadHeartGFR():
+    data = pd.read_csv('data/heart_with_gfr.csv')
+    return data
+
+# load heart with the generated feature and some features excluded
+def loadHeartGFRselected():
+    data = pd.read_csv('data/heart_with_gfr_f_s.csv')
+    return data
 
 # loads up the toxic dataset
 def loadToxic():
