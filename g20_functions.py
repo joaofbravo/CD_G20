@@ -86,6 +86,9 @@ def loadHeartGFRselected():
 def loadToxic():
     return pd.read_csv('data/qsar_oral_toxicity.csv', header=None, sep=';')
 
+def loadToxicBool():
+    return pd.read_csv('data/toxic_in_bool.csv', header=None, sep=';')
+
 
 # discretizes dataset with a one-hot encoding (for heart only)
 # TODO returns list with 3 discretization types (quantile & kmeans don't seem to work)
@@ -316,12 +319,12 @@ def fs_k_best(data, dataset, show_indexes=False):
         selector = SelectKBest(mutual_info_classif, k)
         X_new = selector.fit_transform(X, y)
         # print('\nSelectKBest scores:\n', selector.scores_)
-        print('\nSelectKBest (k = {})'.format(k))
+        print("\nSelectKBest k = {}, {} features selected".format(k, len(X_new[0])))
         if show_indexes:
             print('\nSelected indices: {}'.format(selector.get_support(indices=True)))
         data_new = pd.DataFrame(data=X_new)
         data_new[target] = y
-        output["SelectKBest k = {}, {} features selected".format(k, len(X_new[0]))] = data_new
+        output['k={}'.format(k)] = data_new
 
     return output
 
