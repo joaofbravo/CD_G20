@@ -6,7 +6,7 @@ import mlxtend.frequent_patterns as pm
 
 
 def get_patterns(data,min_sup = 0.001):
-    patterns: pd.DataFrame = pm.apriori(data, min_support=min_sup, use_colnames=True, verbose=True)
+    patterns: pd.DataFrame = pm.fpgrowth(data, min_support=min_sup, use_colnames=True, verbose=True)
     print(len(patterns),'patterns')
     return patterns
 
