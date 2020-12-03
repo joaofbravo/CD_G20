@@ -147,26 +147,27 @@ def scaleData(data):
 
 
 # returns base data, and data for the 3 balancing methods
-def balanceData(data, dataset="Heart", save_pics=False):
+def balanceData(data, dataset="Heart", save_pics=False, graphs = True):
     if dataset == "Heart":
         target = 'DEATH_EVENT'
     elif dataset == "Toxic":
         target = 1024
 
     target_count = data[target].value_counts()
-    plt.figure()
-    plt.title('Class balance')
-    plt.bar(target_count.index, target_count.values)
-    if save_pics:
-        plt.savefig('plots/Class balance for '+dataset+' dataset.png')
-    plt.show()
+    if graphs:
+        plt.figure()
+        plt.title('Class balance')
+        plt.bar(target_count.index, target_count.values)
+        if save_pics:
+            plt.savefig('plots/Class balance for '+dataset+' dataset.png')
+        plt.show()
 
     min_class = target_count.idxmin()
     ind_min_class = target_count.index.get_loc(min_class)
-
-    print('Minority class:', target_count[ind_min_class])
-    print('Majority class:', target_count[1-ind_min_class])
-    print('Proportion:', round(target_count[ind_min_class] / target_count[1-ind_min_class], 2), ': 1')
+    if graphs:
+        print('Minority class:', target_count[ind_min_class])
+        print('Majority class:', target_count[1-ind_min_class])
+        print('Proportion:', round(target_count[ind_min_class] / target_count[1-ind_min_class], 2), ': 1')
 
     RANDOM_STATE = 42  # The answer to the Ultimate Question of Life, the Universe, and Everything
 
@@ -193,13 +194,14 @@ def balanceData(data, dataset="Heart", save_pics=False):
     temp = pd.DataFrame(X, columns=data.columns)
     temp[target] = y
     output['SMOTE'] = temp
-
-    plt.figure()
-    ds.multiple_bar_chart([target_count.index[ind_min_class], target_count.index[1-ind_min_class]], values,
-                          title='Target', xlabel='frequency', ylabel='Class balance')
-    if save_pics:
-        plt.savefig('plots/Target for '+dataset+' dataset.png')
-    plt.show()
+    
+    if graphs:
+        plt.figure()
+        ds.multiple_bar_chart([target_count.index[ind_min_class], target_count.index[1-ind_min_class]], values,
+                              title='Target', xlabel='frequency', ylabel='Class balance')
+        if save_pics:
+            plt.savefig('plots/Target for '+dataset+' dataset.png')
+        plt.show()
     return output
 
 
@@ -301,7 +303,7 @@ def fs_chi2(data, dataset, show_indexes=False):
     return output
 
 
-def fs_k_best(data, dataset, show_indexes=False):
+def fs_k_best(data, dataset, show_indexes=False, k = None):
     output = {'Original': pd.DataFrame().append(data)}
     if dataset == "Heart":
         target = 'DEATH_EVENT'
@@ -314,8 +316,21 @@ def fs_k_best(data, dataset, show_indexes=False):
     y = data.pop(target).values
     X = data.values
     data[target] = y
-
-    for k in ks:
+    
+    if k is None:
+        for k in ks:
+            selector = SelectKBest(mutual_info_classif, k)
+            X_new = selector.fit_transform(X, y)
+            # print('\nSelectKBest scores:\n', selector.scores_)
+            print("\nSelectKBest k = {}, {} features selected".format(k, len(X_new[0])))
+            if show_indexes:
+                print('\nSelected indices: {}'.format(selector.get_support(indices=True)))
+            data_new = pd.DataFrame(data=X_new)
+            data_new[target] = y
+            output['k={}'.format(k)] = data_new
+    
+        return output
+    else:
         selector = SelectKBest(mutual_info_classif, k)
         X_new = selector.fit_transform(X, y)
         # print('\nSelectKBest scores:\n', selector.scores_)
@@ -324,9 +339,7 @@ def fs_k_best(data, dataset, show_indexes=False):
             print('\nSelected indices: {}'.format(selector.get_support(indices=True)))
         data_new = pd.DataFrame(data=X_new)
         data_new[target] = y
-        output['k={}'.format(k)] = data_new
-
-    return output
+        return data_new
 
 
 def fs_percentile(data, dataset, show_indexes=False):
