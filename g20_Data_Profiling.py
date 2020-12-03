@@ -181,7 +181,7 @@ def data_sparsity(data, dataset):
                 plt.show()
 
 
-def data_correlation(data, dataset):
+def data_correlation(data, dataset, limit = 0.9):
     register_matplotlib_converters()
 
     if dataset == "Heart":
@@ -197,15 +197,20 @@ def data_correlation(data, dataset):
         data[cat_vars.columns] = data.select_dtypes(['object']).apply(lambda x: x.astype('category'))
 
         c = data.corr().abs()
+        
+        # build the logical row vector
+        row_cond = c[0]>2
+        for col in list(c.columns.values):
+            temp_cond1 = c[col]>=limit
+            temp_cond2 = c[col]<1
+            temp_cond = temp_cond1*temp_cond2
+            row_cond = row_cond+temp_cond 
+        #filter rows
+        c_r = c[row_cond]
+        # filter columns
+        corr_mtx = c_r[list(c_r.index.values)]
+        plt.figure(figsize=[len(corr_mtx.axes[0]), len(corr_mtx.axes[0])])
+        sns.heatmap(corr_mtx, xticklabels=corr_mtx.columns, yticklabels=corr_mtx.columns, annot=True, cmap='Blues')
+        plt.title('Correlation analysis')
+        plt.show()
 
-        s = c.unstack()
-        so = s.sort_values(kind="quicksort")
-
-        # pd.set_option('display.max_rows', None)
-        for i in range(-1025,-1225,-2):
-            print(so[i:i+1])
-
-
-# TODO
-def topCorr(so, thresholds = [0.99]):
-    return 1
