@@ -48,7 +48,7 @@ def holdoutNaiveBayes(X,y,labels,context,save_pics=False, train_size=0.7):
     plt.show()
     xvalues, score_holdout = NaiveBayesEstimation(trnX, tstX, trnY, tstY, context)
     
-    plt.figure()
+    plt.figure(figsize=(4,1))
     ds.bar_chart(xvalues, score_holdout, title='Comparison of Naive Bayes Models for '+context, ylabel='accuracy', percentage=True)
     if save_pics:
         plt.savefig('plots/'+context+'_NaiveBayes_holdout_estimators.png')
@@ -105,11 +105,13 @@ def crossValNaiveBayes(X,y,labels,context,save_pics=False, n_splits = 5):
     print('CrossVal best estimator: %s with score %.2f' % (xvalues[score_bestarg % len(xvalues)], score_best))
     
     score_mean = np.mean(score_crossval)
-    score_std = np.std([score_crossval[i][0] for i in range(n_splits)])
+    score_std = np.std(score_crossval)
+    score_95_interval = score_std *0.95/n_splits
     print('CrossVal mean score:', score_mean)
-    print('CrossVal std: %.4f' % score_std)
+    print('CrossVal std:', score_std)
+    print('CrossVal 95% confidence:', score_95_interval)
     
-    plt.figure()
+    plt.figure(figsize=(4,1))
     ds.bar_chart(xvalues, score_mean, title='Comparison of Naive Bayes Models for '+context, ylabel='accuracy', percentage=True)
     if save_pics:
         plt.savefig('plots/'+context+'_NaiveBayes_CrossVal'+str(n_splits)+'_mean_estimators.png')

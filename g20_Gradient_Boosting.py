@@ -8,18 +8,23 @@ import sklearn.metrics as metrics
 import ds_functions as ds
 import g20_functions as g20
 
-def GB(trnX, tstX, trnY, tstY, losses, criterion, learn_rates, n_estimators, max_depths, max_features, overfit=False):
+def GB(trnX, tstX, trnY, tstY, losses, criterion, learn_rates, n_estimators, max_depths, max_features, overfit=False,output=False):
     # yvalues = {}
     ytest_values = {}
     ytrain_values = {}
     best_par = ()
     best_tree = None
     last_best = 0
-
+    
+    output_data = {}
     for l in losses:
+        output_data[l] = {}
         for d in max_depths:
+            output_data[l][d] = {}
             for lr in learn_rates:
+                output_data[l][d][lr] = {}
                 for n in n_estimators:
+                    output_data[l][d][lr][n] = {}
                     for f in max_features:
                         clf = GradientBoostingClassifier(loss=l, criterion=criterion, learning_rate=lr,
                                                          n_estimators=n, max_depth=d, max_features=f, random_state=42)
@@ -32,13 +37,16 @@ def GB(trnX, tstX, trnY, tstY, losses, criterion, learn_rates, n_estimators, max
                         # yvalues[key] = metrics.accuracy_score(tstY, prdY)
                         ytest_values[key] = metrics.accuracy_score(tstY, prdY_tst)
                         ytrain_values[key] = metrics.accuracy_score(trnY, prdY_trn)
+                        
+                        output_data[l][d][lr][n][f] = {"train":metrics.accuracy_score(trnY, prdY_trn),"test":metrics.accuracy_score(tstY, prdY_tst)}
                         if ytest_values[key] > last_best:
                             best_par = key
                             best_tree = clf
                             last_best = ytest_values[key]
             # Progress flag
             print('--- done: {}, {}'.format(l, d))
-
+    if output:
+        return best_par, best_tree, last_best, output_data
     if overfit:
         return best_par, ytest_values, ytrain_values
 
@@ -74,7 +82,7 @@ def GBPerformance(tree, trnX, tstX, trnY, tstY, labels):
     
 
 
-def holdoutGB(X, y, labels, context, save_pics=False, train_size=0.7,
+def holdoutGB(X, y, labels, context, save_pics=False, train_size=0.7,output = False,
               losses=['deviance', 'exponential'],  # exponential == AdaBoost
               criterion='friedman_mse',  # friedman_mse, mae
               learn_rates=[0.01, 0.1, 0.3, 0.5, 1],
@@ -83,15 +91,20 @@ def holdoutGB(X, y, labels, context, save_pics=False, train_size=0.7,
               max_features=[.25, 0.5, 0.75, 1]):
     trnX, tstX, trnY, tstY = train_test_split(X, y, train_size=0.7, stratify=y, random_state=42)
     print('-> Holdout for '+context+':')
-    best_par, best_tree, acc = GB(trnX, tstX, trnY, tstY, losses, criterion, learn_rates, n_estimators, max_depths, max_features)
+    if output:
+        best_par, best_tree, acc, output_values = GB(trnX, tstX, trnY, tstY, losses, criterion, learn_rates, n_estimators, max_depths, max_features, output = True)
+    else:
+        best_par, best_tree, acc = GB(trnX, tstX, trnY, tstY, losses, criterion, learn_rates, n_estimators, max_depths, max_features)
     prd_trn, prd_tst = GBPerformance(best_tree, trnX, tstX, trnY, tstY,labels)
     ds.plot_evaluation_results(labels, trnY, prd_trn, tstY, prd_tst)
     if save_pics:
         plt.savefig('plots/'+context+'_GB_Holdout_performance.png')
     plt.show()
+    if output:
+        return output_values
 
 
-def crossValGB(X, y, labels, context, save_pics=False, n_splits=5,
+def crossValGB(X, y, labels, context, save_pics=False, n_splits=5,output = False,
                losses=['deviance', 'exponential'],  # exponential == AdaBoost
                criterion='friedman_mse',  # friedman_mse, mae
                      learn_rates=[0.01, 0.1, 0.3, 0.5, 1],
@@ -106,12 +119,18 @@ def crossValGB(X, y, labels, context, save_pics=False, n_splits=5,
     prd_trn_list = []
     y_test_list  = []
     prd_tst_list = []
+    output_values = []
     for train_index, test_index in skf.split(X, y):
         trnX, tstX = X[train_index], X[test_index]
         trnY, tstY = y[train_index], y[test_index]
 
         print('-> Fold '+str(i)+' for '+context+':')
-        best_par, best_tree, acc_crossval[i] = GB(trnX, tstX, trnY, tstY, losses, criterion, learn_rates, n_estimators, max_depths, max_features)
+        if output:
+            best_par, best_tree, acc_crossval[i],output_value = GB(trnX, tstX, trnY, tstY, losses, criterion, learn_rates,
+                                                                   n_estimators, max_depths, max_features, output = True)
+            output_values.append(output_value)
+        else:
+            best_par, best_tree, acc_crossval[i] = GB(trnX, tstX, trnY, tstY, losses, criterion, learn_rates, n_estimators, max_depths, max_features)
         prd_trn, prd_tst = GBPerformance(best_tree, trnX, tstX, trnY, tstY,labels)
         # ds.plot_evaluation_results(labels, trnY, prd_trn, tstY, prd_tst)
         # if save_pics:
@@ -134,8 +153,9 @@ def crossValGB(X, y, labels, context, save_pics=False, n_splits=5,
     print('CrossVal mean score:', acc_mean)
     acc_std = np.std(acc_crossval)
     print('CrossVal std: %.4f' % acc_std)
-
-
+    if output:
+        return output_values
+    
 def overfit_plot(ytest_values, ytrain_values, f_best, row_var, row_str,
                  col_var, col_str, x_var, x_str, legend_var,
                  key_order=(1,2,3,4,5)):
