@@ -91,7 +91,7 @@ def loadToxicBool():
 
 
 # discretizes dataset with a one-hot encoding (for heart only)
-# TODO returns list with 3 discretization types (quantile & kmeans don't seem to work)
+# TODO return list with 3 discretization types (quantile & kmeans don't seem to work)
 def dummify(data):
     nbins = [10, 2, 50, 2,
              10, 2, 25,
