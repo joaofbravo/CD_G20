@@ -1,3 +1,3 @@
-# CD_G20
+# Data Science
 
 code in main directory
