@@ -30,8 +30,8 @@
 ##### Supervised learning
 * Naïve Bayes
 * kNN
-* Decision trees
-* Random forests
+* Decision tree
+* Random forest
 * Gradient boosting
 * Overfitting
 
